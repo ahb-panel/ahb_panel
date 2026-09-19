@@ -2177,7 +2177,7 @@ table th:first-child, table td:first-child{overflow:visible}
 
 <div>
 <div class="brand-name">
-PX Panel
+AHB Panel
 </div>
 
 <div class="version">
@@ -2233,11 +2233,11 @@ AHB Panel · 13.8.0
 </span>
 
 <a
-href="https://t.me/Pixonal"
+href="https://t.me/ahb_panel"
 target="_blank"
 class="support"
 >
-@Pixonal
+@ahb_panel
 </a>
 
 </div>
