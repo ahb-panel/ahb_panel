@@ -38,7 +38,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # ============================================================
 
 APP_NAME = "ahbpanel"
-APP_VERSION = "13.9.1"
+APP_VERSION = "13.8.0"
 
 SUPPORT_USERNAME = "@ahb_panel"
 SUPPORT_URL = "https://t.me/ahbpanel"
