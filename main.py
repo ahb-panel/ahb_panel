@@ -4944,8 +4944,13 @@ body{
     background:
         radial-gradient(
             circle at top right,
-            rgba(37,99,235,.17),
-            transparent 30%
+            rgba(59,130,246,.22),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at bottom left,
+            rgba(239,68,68,.18),
+            transparent 34%
         ),
         #05070d;
 }
@@ -4957,17 +4962,23 @@ body{
     padding:28px;
     border-radius:25px;
 
-    background:rgba(255,255,255,.045);
+    background:
+        linear-gradient(145deg,rgba(59,130,246,.10),rgba(239,68,68,.08)),
+        rgba(255,255,255,.045);
 
     border:
         1px solid
-        rgba(255,255,255,.08);
+        rgba(59,130,246,.22);
 
     backdrop-filter:blur(25px);
 }
 
 h1{
     margin-top:0;
+    background:linear-gradient(90deg,#60a5fa,#ef4444);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
 }
 
 .text{
@@ -4984,7 +4995,9 @@ h1{
 
     background:rgba(0,0,0,.22);
 
-    color:#93c5fd;
+    color:#bfdbfe;
+    border:1px solid rgba(239,68,68,.20);
+    box-shadow:0 8px 30px rgba(59,130,246,.10);
 
     direction:ltr;
     word-break:break-all;
@@ -4996,12 +5009,12 @@ h1{
     display:inline-block;
     margin-top:18px;
 
-    color:#60a5fa;
+    color:#93c5fd;
     text-decoration:none;
 }
 
 .version{
-    color:#60a5fa;
+    color:#f87171;
     font-size:11px;
 }
 
