@@ -1968,7 +1968,7 @@ body{
             rgba(59,130,246,.18),
             transparent 30%
         ),
-        #07070a;
+        #05070d;
 }
 
 .card{
@@ -2013,7 +2013,7 @@ body{
     background:
         linear-gradient(
             135deg,
-            #2563eb,
+            #3b82f6,
             #3b82f6
         );
 }
@@ -2091,7 +2091,7 @@ h1{
     background:
         linear-gradient(
             135deg,
-            #2563eb,
+            #3b82f6,
             #3b82f6
         );
 }
@@ -2329,7 +2329,7 @@ input{
 input:focus{border-color:rgba(59,130,246,.55)}
 button{
   width:100%;padding:13px;border:none;border-radius:12px;
-  background:#2563eb;color:#fff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;
+  background:#3b82f6;color:#fff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;
 }
 button:hover{background:#1d4ed8}
 button:disabled{opacity:.5;cursor:not-allowed}
@@ -3910,7 +3910,7 @@ async def info_page(
     async with LINKS_LOCK:
         link = LINKS.get(uid)
         if not link:
-            return HTMLResponse("<html lang=\"fa\" dir=\"rtl\"><body style=\"margin:0;background:#07070a;color:#fff;font-family:sans-serif;padding:40px\"><h2>کانفیگ پیدا نشد</h2></body></html>", status_code=404)
+            return HTMLResponse("<html lang=\"fa\" dir=\"rtl\"><body style=\"margin:0;background:#05070d;color:#fff;font-family:sans-serif;padding:40px\"><h2>کانفیگ پیدا نشد</h2></body></html>", status_code=404)
         snapshot = dict(link)
 
     host = get_host(request)
@@ -4947,7 +4947,7 @@ body{
             rgba(37,99,235,.17),
             transparent 30%
         ),
-        #07070a;
+        #05070d;
 }
 
 .card{
@@ -6435,7 +6435,7 @@ DASHBOARD_HTML = r"""
 }
 html.light{
   --bg:#eef1f8;--bg2:#ffffff;--bg3:#f1f4fa;--card:#ffffff;--card-b:rgba(15,23,42,.09);
-  --accent:#2563eb;--accent2:#3b82f6;--purple:#dc2626;--green:#16a34a;--red:#dc2626;--amber:#d97706;
+  --accent:#3b82f6;--accent2:#3b82f6;--purple:#dc2626;--green:#16a34a;--red:#dc2626;--amber:#d97706;
   --t1:#0f172a;--t2:#475569;--t3:#94a3b8;
   --shadow:0 10px 32px rgba(15,23,42,.08);
   --input-bg:#f8fafc;--hover:rgba(37,99,235,.08);
@@ -6789,7 +6789,7 @@ tr:hover td{background:var(--hover)}
       <p style="color:var(--t2);font-size:13px;line-height:1.75;margin-bottom:14px" data-i18n="auto_desc">با یک کلیک کانفیگ بهینه ساخته می‌شود. بعد از ساخت لینک VLESS و ساب در اختیار شماست.</p>
       <div class="field"><label data-i18n="label_proto">پروتکـل</label><select id="aProto"></select></div>
       <div class="field"><label data-i18n="label_count">تعداد کانفیگ در سـاب (1-40)</label><input id="aCount" type="number" value="1" min="1" max="40"></div>
-      <button class="btn btn-p" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#6366f1)" onclick="doAutoCreate()">
+      <button class="btn btn-p" style="width:100%;background:linear-gradient(135deg,#ef4444,#6366f1)" onclick="doAutoCreate()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2"/></svg>
         <span data-i18n="btn_auto">ساخـت خودکــار</span>
       </button>
@@ -6883,7 +6883,7 @@ tr:hover td{background:var(--hover)}
     <p style="font-size:12px;color:var(--t3);line-height:1.8;margin-bottom:14px">در صورت خرابی پنل، بک‌آپ را دانلود کنید و در پنل جدید وارد کنید.</p>
     <div class="g2" style="margin-bottom:12px">
       <button class="btn btn-p" style="width:100%" onclick="downloadBackup('users')">دانلود بک‌آپ کاربران</button>
-      <button class="btn btn-p" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#6366f1)" onclick="downloadBackup('bot')">دانلود بک‌آپ ربات</button>
+      <button class="btn btn-p" style="width:100%;background:linear-gradient(135deg,#ef4444,#6366f1)" onclick="downloadBackup('bot')">دانلود بک‌آپ ربات</button>
     </div>
     <div class="field">
       <label>وارد کردن بـک‌آپ کاربران</label>
@@ -7796,7 +7796,7 @@ async def global_exception_handler(
         """
         <html lang="fa" dir="rtl">
         <body style="
-            background:#07070a;
+            background:#05070d;
             color:#fff;
             font-family:sans-serif;
             padding:40px;
