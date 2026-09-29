@@ -1,5 +1,5 @@
 # ============================================================
-# ahbpanel 13.8.0
+# ahbpanel 14.0.0
 # Railway Ready
 # Created By Ahb
 # ============================================================
@@ -38,7 +38,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # ============================================================
 
 APP_NAME = "ahbpanel"
-APP_VERSION = "13.8.0"
+APP_VERSION = "14.0.0"
 
 SUPPORT_USERNAME = "@ahb_panel"
 SUPPORT_URL = "https://t.me/ahbpanel"
@@ -2181,7 +2181,7 @@ AHB Panel
 </div>
 
 <div class="version">
-13.8.0
+14.0.0
 </div>
 </div>
 
@@ -2229,7 +2229,7 @@ class="btn secondary"
 <div class="footer">
 
 <span>
-AHB Panel · 13.8.0
+AHB Panel · 14.0.0
 </span>
 
 <a
@@ -5017,7 +5017,7 @@ AHB Panel
 </h1>
 
 <div class="version">
-13.8.0
+14.0.0
 </div>
 
 <div class="text">
@@ -6421,21 +6421,21 @@ DASHBOARD_HTML = r"""
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>AHBPanel 13.8.0</title>
+<title>AHBPanel 14.0.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#06060b;--bg2:#0b0b12;--bg3:#12121c;--card:rgba(18,18,28,.92);--card-b:rgba(255,255,255,.08);
-  --accent:#3b82f6;--accent2:#60a5fa;--purple:#8b5cf6;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;
+  --accent:#3b82f6;--accent2:#60a5fa;--purple:#ef4444;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;
   --t1:#f8fafc;--t2:rgba(248,250,252,.72);--t3:rgba(248,250,252,.42);
   --sb:252px;--sb-c:74px;--radius:18px;--shadow:0 12px 40px rgba(0,0,0,.45);
   --input-bg:rgba(0,0,0,.4);--hover:rgba(59,130,246,.12);
-  --glow:0 0 40px rgba(59,130,246,.12);--glass:blur(16px);
+  --glow:0 0 40px rgba(59,130,246,.12),0 0 70px rgba(239,68,68,.08);--glass:blur(16px);
 }
 html.light{
   --bg:#eef1f8;--bg2:#ffffff;--bg3:#f1f4fa;--card:#ffffff;--card-b:rgba(15,23,42,.09);
-  --accent:#2563eb;--accent2:#3b82f6;--purple:#7c3aed;--green:#16a34a;--red:#dc2626;--amber:#d97706;
+  --accent:#2563eb;--accent2:#3b82f6;--purple:#dc2626;--green:#16a34a;--red:#dc2626;--amber:#d97706;
   --t1:#0f172a;--t2:#475569;--t3:#94a3b8;
   --shadow:0 10px 32px rgba(15,23,42,.08);
   --input-bg:#f8fafc;--hover:rgba(37,99,235,.08);
@@ -6447,7 +6447,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--t1);dis
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
     radial-gradient(ellipse 80% 50% at 100% 0%, rgba(59,130,246,.14), transparent 50%),
-    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(139,92,246,.10), transparent 45%);
+    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(239,68,68,.10), transparent 45%);
 }
 html.light body::before{
   background:
@@ -6467,7 +6467,7 @@ body.en{font-family:'Inter',system-ui,sans-serif}
 .sb-toggle svg{width:14px;height:14px;transition:transform .28s}
 .sidebar.collapsed .sb-toggle svg{transform:rotate(180deg)}
 .sb-logo{display:flex;align-items:center;gap:12px;padding:20px 16px;border-bottom:1px solid var(--card-b)}
-.sb-logo-icon{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0;box-shadow:0 4px 14px rgba(59,130,246,.35)}
+.sb-logo-icon{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#ef4444);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0;box-shadow:0 4px 14px rgba(59,130,246,.35)}
 .sb-logo-text{overflow:hidden;white-space:nowrap}
 .sb-logo-name{font-size:15px;font-weight:800;letter-spacing:-.02em}
 .sb-logo-ver{font-size:10px;color:var(--t3);margin-top:2px}
@@ -6514,7 +6514,7 @@ body.en{font-family:'Inter',system-ui,sans-serif}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 .action-card{cursor:pointer;transition:.2s;border:1px solid var(--card-b)}
 .action-card:hover{border-color:rgba(59,130,246,.4);transform:translateY(-2px);box-shadow:0 12px 28px rgba(59,130,246,.12)}
-.action-card.purple:hover{border-color:rgba(139,92,246,.45)}
+.action-card.purple:hover{border-color:rgba(239,68,68,.45)}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 16px;border-radius:11px;border:1px solid var(--card-b);background:var(--bg3);color:var(--t2);cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;transition:.15s}
 .btn:hover{color:var(--t1);border-color:var(--accent)}
@@ -6784,7 +6784,7 @@ tr:hover td{background:var(--hover)}
         <span data-i18n="btn_create">ساخت</span>
       </button>
     </div>
-    <div class="card" style="border-color:rgba(139,92,246,.35)">
+    <div class="card" style="border-color:rgba(239,68,68,.35)">
       <div class="card-title" data-i18n="auto_create">ساخت خودکـار (پیشنهــادی)</div>
       <p style="color:var(--t2);font-size:13px;line-height:1.75;margin-bottom:14px" data-i18n="auto_desc">با یک کلیک کانفیگ بهینه ساخته می‌شود. بعد از ساخت لینک VLESS و ساب در اختیار شماست.</p>
       <div class="field"><label data-i18n="label_proto">پروتکـل</label><select id="aProto"></select></div>
