@@ -4007,32 +4007,34 @@ async def info_page(
 </script>
 <style>
   :root {{
-    --bg-main: #05060a;
-    --bg-card: rgba(255, 255, 255, 0.04);
-    --bg-card-hover: rgba(255, 255, 255, 0.07);
-    --border-color: rgba(255, 255, 255, 0.1);
-    --text-main: #f1f5f9;
-    --text-muted: rgba(255, 255, 255, 0.4);
-    --bg-sub-card: rgba(0, 0, 0, 0.2);
-    --grad-1: rgba(96,165,250,.16);
-    --grad-2: rgba(96,165,250,.13);
-    --grad-3: rgba(52,211,153,.08);
+    --bg-main: #f7f9fd;
+    --bg-card: rgba(255,255,255,.88);
+    --bg-card-hover: rgba(255,255,255,.98);
+    --border-color: rgba(59,130,246,.18);
+    --text-main: #14213d;
+    --text-muted: #71809e;
+    --bg-sub-card: #f1f5fb;
+    --grad-1: rgba(59,130,246,.16);
+    --grad-2: rgba(239,68,68,.13);
+    --grad-3: rgba(239,68,68,.07);
+    --accent-blue: #3b82f6;
+    --accent-red: #ef4444;
   }}
 
-  body.theme-lighter {{
-    --bg-main: #131722;
-    --bg-card: rgba(255, 255, 255, 0.075);
-    --bg-card-hover: rgba(255, 255, 255, 0.115);
-    --border-color: rgba(255, 255, 255, 0.16);
-    --text-main: #ffffff;
-    --text-muted: rgba(255, 255, 255, 0.6);
-    --bg-sub-card: rgba(0, 0, 0, 0.35);
-    --grad-1: rgba(96,165,250,.24);
-    --grad-2: rgba(96,165,250,.20);
-    --grad-3: rgba(52,211,153,.13);
+  body.theme-dark {{
+    --bg-main: #070a12;
+    --bg-card: rgba(20,25,38,.88);
+    --bg-card-hover: rgba(28,34,50,.96);
+    --border-color: rgba(255,255,255,.11);
+    --text-main: #f8fafc;
+    --text-muted: rgba(248,250,252,.55);
+    --bg-sub-card: rgba(0,0,0,.30);
+    --grad-1: rgba(59,130,246,.18);
+    --grad-2: rgba(239,68,68,.15);
+    --grad-3: rgba(239,68,68,.08);
   }}
 
-  html,body{{background:var(--bg-main); transition: background 0.3s ease, color 0.3s ease;}}
+  html,body{{background:var(--bg-main); color:var(--text-main); transition:background .3s ease,color .3s ease;}}
   body{{
     background:
       radial-gradient(ellipse 80% 50% at 10% -10%, var(--grad-1), transparent 50%),
@@ -4040,6 +4042,21 @@ async def info_page(
       radial-gradient(ellipse 55% 35% at 60% 100%, var(--grad-3), transparent 40%),
       var(--bg-main);
   }}
+  /* INFO page theme overrides: white by default, dark when toggle is checked */
+  body:not(.theme-dark) .text-white, body:not(.theme-dark) .text-slate-100{{color:var(--text-main)!important}}
+  body:not(.theme-dark) [class*="text-white/"]{{color:var(--text-muted)!important}}
+  body:not(.theme-dark) [class*="border-white"]{{border-color:rgba(59,130,246,.16)!important}}
+  body:not(.theme-dark) [class*="bg-white/"]{{background:rgba(59,130,246,.06)!important}}
+  body:not(.theme-dark) .sub-box{{background:var(--bg-sub-card)!important;border-color:rgba(59,130,246,.14)!important}}
+  body:not(.theme-dark) .dynamic-card{{box-shadow:0 18px 55px rgba(40,64,105,.10)!important}}
+  body:not(.theme-dark) .text-purple-300{{color:#ef4444!important}}
+  body:not(.theme-dark) .bg-purple-400\/10{{background:rgba(239,68,68,.08)!important}}
+  body:not(.theme-dark) .border-purple-400\/30{{border-color:rgba(239,68,68,.24)!important}}
+  body:not(.theme-dark) .text-blue-300{{color:#2563eb!important}}
+  body:not(.theme-dark) .border-blue-400\/25{{border-color:rgba(59,130,246,.24)!important}}
+  body:not(.theme-dark) .bg-blue-400\/20{{background:rgba(59,130,246,.10)!important}}
+  body:not(.theme-dark) .text-emerald-300{{color:#059669!important}}
+  body:not(.theme-dark) .text-amber-300{{color:#b45309!important}}
   .status-dot{{box-shadow:0 0 10px currentColor}}
   ::-webkit-scrollbar{{width:8px;height:8px}}
   ::-webkit-scrollbar-thumb{{background:rgba(255,255,255,.12);border-radius:99px}}
@@ -4063,12 +4080,24 @@ async def info_page(
 
 <div class="w-full max-w-4xl mx-auto space-y-5 sm:space-y-6 md:space-y-8">
 
-  <!-- Top Bar Theme Toggle Button -->
-  <div class="flex justify-end">
-    <button type="button" onclick="toggleTheme()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-extrabold text-amber-300 border border-amber-400/30 bg-amber-400/10 hover:bg-amber-400/20 transition-colors shadow-lg">
-      <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-      تغییر تم
-    </button>
+  <!-- Theme -->
+  <div class="rounded-[22px] border dynamic-card backdrop-blur-2xl px-5 py-4 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl grid place-items-center bg-gradient-to-br from-blue-500/15 to-red-500/10 border border-blue-400/20">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9c0-.4 0-.8-.08-1.2A6.5 6.5 0 0 1 12.2 3H12z"/></svg>
+      </div>
+      <div>
+        <p class="text-sm font-black">تم</p>
+        <p class="text-[10px] mt-1 opacity-60">فعال کردن، حالت تیره را روشن می‌کند.</p>
+      </div>
+    </div>
+    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+      <input id="themeToggle" type="checkbox" class="sr-only peer" onchange="toggleTheme()">
+      <span class="w-14 h-8 rounded-full bg-slate-200 peer-checked:bg-slate-800 border border-slate-300 peer-checked:border-slate-600 transition-colors"></span>
+      <span class="absolute right-1 top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform peer-checked:-translate-x-6 grid place-items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l4 4L19 6"/></svg>
+      </span>
+    </label>
   </div>
 
   <!-- Hero -->
@@ -4376,19 +4405,22 @@ async def info_page(
 <script>
 const vlessUrlData = "{vless_url}";
 
-// Theme toggle logic with localStorage support (2 themes total)
+// Theme toggle: white by default, dark when enabled
 function toggleTheme() {{
   const body = document.body;
-  body.classList.toggle('theme-lighter');
-  const isLighter = body.classList.contains('theme-lighter');
-  localStorage.setItem('ahb_theme', isLighter ? 'lighter' : 'dark');
+  const toggle = document.getElementById('themeToggle');
+  const enabled = !!(toggle && toggle.checked);
+  body.classList.toggle('theme-dark', enabled);
+  localStorage.setItem('ahb_theme', enabled ? 'dark' : 'light');
 }}
 
 // Initialize saved theme on load
 (function() {{
-  if (localStorage.getItem('ahb_theme') === 'lighter') {{
-    document.body.classList.add('theme-lighter');
-  }}
+  const saved = localStorage.getItem('ahb_theme');
+  const enabled = saved === 'dark';
+  document.body.classList.toggle('theme-dark', enabled);
+  const toggle = document.getElementById('themeToggle');
+  if (toggle) toggle.checked = enabled;
 }})();
 
 function openQrModal() {{
