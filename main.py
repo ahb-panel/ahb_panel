@@ -4908,170 +4908,128 @@ async def sub_group_subscription(
 PUBLIC_SUB_HTML = r"""
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width,initial-scale=1"
->
-
-<title>
-AHB Panel
-</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AHB Panel · Subscription</title>
 <style>
-
-*{
-    box-sizing:border-box;
+:root{
+  --bg:#f7f9fd;--surface:rgba(255,255,255,.86);--surface2:#f1f5fb;--text:#14213d;
+  --muted:#71809e;--blue:#3b82f6;--blue2:#60a5fa;--red:#ef4444;--red2:#fb7185;
+  --green:#18b889;--border:rgba(59,130,246,.18);--shadow:0 18px 55px rgba(40,64,105,.12);
 }
-
-body{
-    margin:0;
-    min-height:100vh;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    padding:20px;
-
-    font-family:Arial,sans-serif;
-
-    color:#fff;
-
-    background:
-        radial-gradient(
-            circle at top right,
-            rgba(59,130,246,.22),
-            transparent 32%
-        ),
-        radial-gradient(
-            circle at bottom left,
-            rgba(239,68,68,.18),
-            transparent 34%
-        ),
-        #05070d;
-}
-
-.card{
-    width:100%;
-    max-width:560px;
-
-    padding:28px;
-    border-radius:25px;
-
-    background:
-        linear-gradient(145deg,rgba(59,130,246,.10),rgba(239,68,68,.08)),
-        rgba(255,255,255,.045);
-
-    border:
-        1px solid
-        rgba(59,130,246,.22);
-
-    backdrop-filter:blur(25px);
-}
-
-h1{
-    margin-top:0;
-    background:linear-gradient(90deg,#60a5fa,#ef4444);
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-}
-
-.text{
-    color:rgba(255,255,255,.55);
-    line-height:2;
-    font-size:13px;
-}
-
-.url{
-    margin-top:20px;
-    padding:14px;
-
-    border-radius:13px;
-
-    background:rgba(0,0,0,.22);
-
-    color:#bfdbfe;
-    border:1px solid rgba(239,68,68,.20);
-    box-shadow:0 8px 30px rgba(59,130,246,.10);
-
-    direction:ltr;
-    word-break:break-all;
-
-    font-family:Consolas,monospace;
-}
-
-.support{
-    display:inline-block;
-    margin-top:18px;
-
-    color:#93c5fd;
-    text-decoration:none;
-}
-
-.version{
-    color:#f87171;
-    font-size:11px;
-}
-
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;font-family:Tahoma,Arial,sans-serif;color:var(--text);background:
+ radial-gradient(circle at 0 0,rgba(59,130,246,.18),transparent 30%),
+ radial-gradient(circle at 100% 100%,rgba(239,68,68,.16),transparent 30%),var(--bg);transition:.35s ease}
+body.dark{--bg:#0d1220;--surface:rgba(29,36,53,.88);--surface2:#171d2b;--text:#f5f7fb;--muted:#9ca8bd;--border:rgba(148,163,184,.18);--shadow:0 20px 65px rgba(0,0,0,.32)}
+.page{width:min(100%,720px);margin:auto;padding:18px 16px 42px}
+.theme-box{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;margin-bottom:16px;border:1px solid var(--border);border-radius:24px;background:var(--surface);box-shadow:var(--shadow);backdrop-filter:blur(18px)}
+.theme-title{font-weight:900;font-size:18px}.theme-desc{font-size:12px;color:var(--muted);margin-top:5px}
+.switch{position:relative;width:66px;height:36px;display:block;flex:0 0 auto}.switch input{display:none}.slider{position:absolute;inset:0;border-radius:99px;background:#dbe5f5;cursor:pointer;transition:.25s}.slider:after{content:'☀';position:absolute;width:28px;height:28px;right:4px;top:4px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#334155;box-shadow:0 3px 12px #0002;transition:.25s;font-size:15px}.switch input:checked+.slider{background:linear-gradient(90deg,var(--blue),var(--red))}.switch input:checked+.slider:after{transform:translateX(-30px);content:'☾';color:#172033}
+.card{position:relative;overflow:hidden;border:1px solid var(--border);border-radius:30px;background:var(--surface);box-shadow:var(--shadow);backdrop-filter:blur(22px);padding:24px;margin-bottom:18px}
+.card:before{content:'';position:absolute;width:180px;height:180px;right:-100px;top:-100px;border-radius:50%;background:rgba(59,130,246,.13);filter:blur(4px)}
+.card:after{content:'';position:absolute;width:180px;height:180px;left:-110px;bottom:-110px;border-radius:50%;background:rgba(239,68,68,.10);filter:blur(4px)}
+.head{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.head h1{margin:0;font-size:26px;font-weight:950}.subline{color:var(--muted);font-size:12px;line-height:1.9;margin-top:7px;direction:ltr;text-align:right;word-break:break-all}.shield{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;font-size:25px;color:var(--blue);background:rgba(59,130,246,.09);border:1px solid rgba(59,130,246,.2)}
+.actions{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.btn{border:0;border-radius:999px;padding:12px 18px;font:inherit;font-weight:900;cursor:pointer;color:#fff;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 24px #0001;transition:.2s}.btn:hover{transform:translateY(-1px)}.btn-qr{background:linear-gradient(100deg,var(--blue),var(--red))}.btn-green{background:linear-gradient(100deg,#13a981,#25d49f)}.btn-copy{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.section-label{position:relative;z-index:1;color:var(--muted);font-size:12px;font-weight:950;letter-spacing:1.2px}.section-title{position:relative;z-index:1;font-size:23px;font-weight:950;margin:5px 0 20px}.traffic-top{position:relative;z-index:1;display:flex;justify-content:center;padding:4px 0 20px}.ring{width:176px;height:176px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--blue),var(--red),#d9e1ef 0);position:relative}.ring:after{content:'';position:absolute;inset:12px;border-radius:50%;background:var(--surface)}.ring-content{position:relative;z-index:1;text-align:center}.percent{font-size:32px;font-weight:950}.used-label{font-size:12px;color:var(--muted);margin-top:5px}.limit{text-align:left;font-size:25px;font-weight:950;margin:0 0 18px}.chart{position:relative;z-index:1;border-radius:22px;background:var(--surface2);border:1px solid var(--border);padding:18px;height:112px}.chart-title{font-size:12px;color:var(--muted);margin-bottom:20px}.chart-line{height:4px;border-radius:9px;background:linear-gradient(90deg,var(--blue),var(--red));box-shadow:0 0 18px rgba(59,130,246,.35)}.meta{position:relative;z-index:1;display:flex;justify-content:space-between;gap:12px;margin-top:20px;color:var(--muted);font-size:12px}.meta b{color:var(--text);font-size:14px}.service-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.service{padding:15px;border-radius:18px;background:var(--surface2);border:1px solid var(--border)}.service small{color:var(--muted)}.service strong{display:block;margin-top:5px;font-size:16px}.link-list{position:relative;z-index:1;display:grid;gap:10px}.link-item{padding:15px;border-radius:20px;background:var(--surface2);border:1px solid var(--border)}.link-name{font-weight:900}.link-url{direction:ltr;text-align:left;word-break:break-all;color:var(--muted);font-size:11px;margin-top:8px}.empty{text-align:center;color:var(--muted);padding:30px 5px}.footer{text-align:center;color:var(--muted);font-size:11px;padding:4px 0 18px}.support{color:var(--blue);text-decoration:none;font-weight:800}
+.lock{display:grid;gap:12px}.lock input{width:100%;padding:13px 15px;border-radius:16px;border:1px solid var(--border);background:var(--surface2);color:var(--text);outline:none;font:inherit}.error{color:#ef4444;font-size:12px}
+@media(max-width:480px){.page{padding:12px 12px 30px}.card{padding:20px;border-radius:25px}.head h1{font-size:22px}.meta{font-size:11px}.service-grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
-
 <body>
+<div class="page">
+  <div class="theme-box">
+    <div><div class="theme-title">🎨 تم</div><div class="theme-desc">با فعال کردن این گزینه، تم برنامه به حالت تیره تغییر می‌کند.</div></div>
+    <label class="switch" aria-label="تغییر تم"><input id="themeToggle" type="checkbox"><span class="slider"></span></label>
+  </div>
 
-<div class="card">
+  <section class="card">
+    <div class="head">
+      <div><h1 id="subName">لینک پیش‌فرض</h1><div class="subline" id="subMeta">در حال دریافت اطلاعات...</div></div>
+      <div class="shield">♢</div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-qr" id="qrBtn">▦ QR Code</button>
+      <button class="btn btn-green" id="statusBtn">● فعال</button>
+      <button class="btn btn-copy" id="copyBtn">کپی لینک</button>
+    </div>
+  </section>
 
-<h1>
-AHB Panel
-</h1>
+  <section class="card">
+    <div class="section-label">TRAFFIC OVERVIEW</div>
+    <div class="section-title">مصرف سرویس 📈</div>
+    <div class="traffic-top"><div class="ring" id="ring"><div class="ring-content"><div class="percent" id="percent">0%</div><div class="used-label">مصرف شده</div></div></div></div>
+    <div class="limit" id="limit">∞ / B 0</div>
+    <div class="chart"><div class="chart-title">روند مصرف ↗</div><div class="chart-line"></div></div>
+    <div class="meta"><span>باقی‌مانده: <b id="remaining">نامحدود</b> ◷</span><span>زمان: <b id="expiry">نامحدود</b> ▣</span></div>
+  </section>
 
-<div class="version">
-14.0.0
-</div>
+  <section class="card">
+    <div class="section-label">SERVICE</div>
+    <div class="section-title">اطلاعات سرویس ◷</div>
+    <div class="service-grid">
+      <div class="service"><small>اتصالات فعال</small><strong id="connections">0</strong></div>
+      <div class="service"><small>تعداد کانفیگ</small><strong id="linkCount">0</strong></div>
+      <div class="service"><small>مصرف کل</small><strong id="totalUsed">0 B</strong></div>
+      <div class="service"><small>وضعیت</small><strong id="serviceState">فعال</strong></div>
+    </div>
+  </section>
 
-<div class="text">
-اشتراک شما آماده است.
-</div>
+  <section class="card">
+    <div class="section-label">SUBSCRIPTIONS</div>
+    <div class="section-title">کانفیگ‌ها</div>
+    <div id="links" class="link-list"><div class="empty">در حال دریافت کانفیگ‌ها...</div></div>
+  </section>
 
-<div
-class="url"
-id="subUrl"
-></div>
-
-<a
-class="support"
-href="https://t.me/ahb_panel"
-target="_blank"
-rel="noopener"
->
-پشتیبانی @ahb_panel
-</a>
-
+  <div class="footer">AHB Panel · 14.0.0 · <a class="support" href="https://t.me/ahb_panel" target="_blank" rel="noopener">پشتیبانی @ahb_panel</a></div>
 </div>
 
 <script>
+const key=location.pathname.split('/').filter(Boolean).pop();
+const toggle=document.getElementById('themeToggle');
+const saved=localStorage.getItem('ahb-theme');
+if(saved==='dark'){document.body.classList.add('dark');toggle.checked=true}
+toggle.addEventListener('change',()=>{document.body.classList.toggle('dark',toggle.checked);localStorage.setItem('ahb-theme',toggle.checked?'dark':'light')});
 
-const url =
-    location.origin +
-    location.pathname.replace(
-        "/p/",
-        "/sub-group/"
-    );
-
-document.getElementById(
-    "subUrl"
-).textContent = url;
-
+let currentSubUrl='';
+const fmt=(n)=>{n=Number(n||0);if(!n)return '0 B';const u=['B','KB','MB','GB','TB'];let i=0;while(n>=1024&&i<u.length-1){n/=1024;i++}return `${n<10?n.toFixed(1):Math.round(n)} ${u[i]}`};
+const remaining=(limit,used)=>{if(!limit)return 'نامحدود';return fmt(Math.max(0,Number(limit)-Number(used)))};
+const expiry=(v)=>{if(!v)return 'نامحدود';try{return new Date(v).toLocaleDateString('fa-IR')}catch(e){return v}};
+function render(data){
+ document.getElementById('subName').textContent=data.name||'لینک پیش‌فرض';
+ document.getElementById('subMeta').textContent=`AHBPanel 14.0.0 · ${data.links?.length||0} کانفیگ`;
+ currentSubUrl=data.sub_url||location.origin+`/sub-group/${key}`;
+ const links=data.links||[]; const used=links.reduce((s,x)=>s+Number(x.used_bytes||0),0); const limit=links.reduce((s,x)=>s+Number(x.limit_bytes||0),0);
+ const pct=limit?Math.min(100,Math.round(used/limit*100)):0;
+ document.getElementById('percent').textContent=pct+'%';
+ document.getElementById('limit').textContent=`${limit?fmt(limit):'∞'} / ${fmt(used)}`;
+ document.getElementById('remaining').textContent=remaining(limit,used);
+ document.getElementById('expiry').textContent=links.length?expiry(links.map(x=>x.expires_at).filter(Boolean).sort().at(-1)):'نامحدود';
+ document.getElementById('connections').textContent=data.active_connections||0;
+ document.getElementById('linkCount').textContent=links.length;
+ document.getElementById('totalUsed').textContent=fmt(data.total_used_fmt?0:used);
+ document.getElementById('serviceState').textContent=links.some(x=>x.active)?'فعال':'غیرفعال';
+ document.getElementById('ring').style.background=`conic-gradient(var(--blue),var(--red) ${pct}%,var(--surface2) ${pct}%)`;
+ const box=document.getElementById('links');box.innerHTML='';
+ if(!links.length){box.innerHTML='<div class="empty">کانفیگی برای نمایش وجود ندارد.</div>';return}
+ links.forEach((x,i)=>{const d=document.createElement('div');d.className='link-item';d.innerHTML=`<div class="link-name">${i+1}. ${escapeHtml(x.label||'Config')} · ${x.active?'فعال':'غیرفعال'}</div><div class="link-url">${escapeHtml(x.sub_url||x.vless_link||'')}</div>`;box.appendChild(d)})
+}
+function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+async function load(pw=''){
+ try{const r=await fetch(`/api/public/sub/${encodeURIComponent(key)}${pw?'?pw='+encodeURIComponent(pw):''}`);const d=await r.json();
+  if(d.locked){document.getElementById('links').innerHTML=`<div class="lock"><div>این اشتراک رمز دارد.</div><input id="pw" type="password" placeholder="رمز اشتراک"><button class="btn btn-qr" onclick="load(document.getElementById('pw').value)">ورود</button></div>`;return}
+  render(d);
+ }catch(e){document.getElementById('links').innerHTML='<div class="empty error">دریافت اطلاعات اشتراک انجام نشد.</div>'}
+}
+document.getElementById('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(currentSubUrl);document.getElementById('copyBtn').textContent='کپی شد ✓';setTimeout(()=>document.getElementById('copyBtn').textContent='کپی لینک',1500)}catch(e){}};
+document.getElementById('qrBtn').onclick=()=>{if(currentSubUrl)window.open('https://quickchart.io/qr?text='+encodeURIComponent(currentSubUrl)+'&size=500','_blank')};
+load();
 </script>
-
 </body>
 </html>
 """
-
 
 @app.get(
     "/p/{uuid_key}",
