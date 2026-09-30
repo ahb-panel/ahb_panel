@@ -6401,7 +6401,7 @@ tr:hover td{background:var(--hover)}
     <div class="sb-logo-icon">AHB</div>
     <div class="sb-logo-text">
       <div class="sb-logo-name">AHBPanel</div>
-      <div class="sb-logo-ver">v13.9.4</div>
+      <div class="sb-logo-ver">v14.1.0</div>
     </div>
   </div>
   <nav class="nav">
