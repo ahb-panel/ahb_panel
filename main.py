@@ -1,5 +1,5 @@
 # ============================================================
-# ahbpanel 14.0.0
+# ahbpanel 14.1.0
 # Railway Ready
 # Created By Ahb
 # ============================================================
@@ -38,7 +38,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # ============================================================
 
 APP_NAME = "ahbpanel"
-APP_VERSION = "14.0.0"
+APP_VERSION = "14.1.0"
 
 SUPPORT_USERNAME = "@ahb_panel"
 SUPPORT_URL = "https://t.me/ahbpanel"
@@ -1968,7 +1968,7 @@ body{
             rgba(59,130,246,.18),
             transparent 30%
         ),
-        #05070d;
+        #07070a;
 }
 
 .card{
@@ -2013,7 +2013,7 @@ body{
     background:
         linear-gradient(
             135deg,
-            #3b82f6,
+            #2563eb,
             #3b82f6
         );
 }
@@ -2091,7 +2091,7 @@ h1{
     background:
         linear-gradient(
             135deg,
-            #3b82f6,
+            #2563eb,
             #3b82f6
         );
 }
@@ -2181,7 +2181,7 @@ AHB Panel
 </div>
 
 <div class="version">
-14.0.0
+14.1.0
 </div>
 </div>
 
@@ -2229,7 +2229,7 @@ class="btn secondary"
 <div class="footer">
 
 <span>
-AHB Panel · 14.0.0
+AHB Panel · 14.1.0
 </span>
 
 <a
@@ -2329,7 +2329,7 @@ input{
 input:focus{border-color:rgba(59,130,246,.55)}
 button{
   width:100%;padding:13px;border:none;border-radius:12px;
-  background:#3b82f6;color:#fff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;
+  background:#2563eb;color:#fff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;
 }
 button:hover{background:#1d4ed8}
 button:disabled{opacity:.5;cursor:not-allowed}
@@ -3910,7 +3910,10 @@ async def info_page(
     async with LINKS_LOCK:
         link = LINKS.get(uid)
         if not link:
-            return HTMLResponse("<html lang=\"fa\" dir=\"rtl\"><body style=\"margin:0;background:#05070d;color:#fff;font-family:sans-serif;padding:40px\"><h2>کانفیگ پیدا نشد</h2></body></html>", status_code=404)
+            return HTMLResponse(
+                "<html lang=\"fa\" dir=\"rtl\"><body style=\"margin:0;background:#f7f9ff;color:#101b55;font-family:sans-serif;padding:40px\"><h2>کانفیگ پیدا نشد</h2></body></html>",
+                status_code=404,
+            )
         snapshot = dict(link)
 
     host = get_host(request)
@@ -3918,6 +3921,7 @@ async def info_page(
     sub_url = f"https://{host}/sub/{uid}"
     used = int(snapshot.get("used_bytes", 0) or 0)
     limit = int(snapshot.get("limit_bytes", 0) or 0)
+
     if limit > 0:
         usage_percent = max(0, min(100, round((used / limit) * 100, 1)))
         usage_value = f"{fmt_bytes(used)} / {fmt_bytes(limit)}"
@@ -3939,7 +3943,11 @@ async def info_page(
                 days, rem = divmod(seconds, 86400)
                 hours, rem = divmod(rem, 3600)
                 minutes, _ = divmod(rem, 60)
-                expiry_remaining = f"{days} روز و {hours} ساعت" if days else (f"{hours} ساعت و {minutes} دقیقه" if hours else f"{minutes} دقیقه")
+                expiry_remaining = (
+                    f"{days} روز و {hours} ساعت"
+                    if days
+                    else (f"{hours} ساعت و {minutes} دقیقه" if hours else f"{minutes} دقیقه")
+                )
         except Exception:
             expiry_remaining = "نامشخص"
         expiry_display = str(expires_at)
@@ -3948,34 +3956,18 @@ async def info_page(
         expiry_display = "نامحدود"
 
     status_text = "فعال" if is_link_allowed(snapshot) else "غیرفعال"
-    status_class = "good" if status_text == "فعال" else "bad"
-    ip_limit = "نامحدود" if not snapshot.get("ip_limit", 0) else str(snapshot.get("ip_limit"))
-    connection_limit = "نامحدود" if not snapshot.get("connection_limit", 0) else str(snapshot.get("connection_limit"))
-    speed_limit = "نامحدود" if not snapshot.get("speed_limit_bytes", 0) else fmt_bytes(snapshot.get("speed_limit_bytes", 0)) + "/s"
-
-    usage_history = snapshot.get("usage_history", [])
-    svg_points = "0,50 300,50"
-    if usage_history and len(usage_history) > 1:
-        max_hist = max(usage_history) if max(usage_history) > 0 else 1
-        pts = []
-        step = 300 / (len(usage_history) - 1)
-        for i, val in enumerate(usage_history):
-            x = i * step
-            y = 60 - min(60, max(4, (val / max_hist) * 52))
-            pts.append(f"{x:.1f},{y:.1f}")
-        svg_points = " ".join(pts)
-    elif usage_history and len(usage_history) == 1:
-        svg_points = f"0,50 300,{60 - min(60, max(4, (usage_history[0] / (limit if limit > 0 else max(used, 1))) * 52)):.1f}"
-
-    status_badge_html = 'text-emerald-300 border border-emerald-400/25 bg-emerald-400/10' if status_class == 'good' else 'text-rose-300 border border-rose-400/25 bg-rose-400/10'
-    label_escaped = escape_html(snapshot.get("label", "PXpanel"))
+    status_color = "#10b981" if status_text == "فعال" else "#ef4444"
+    label_escaped = escape_html(snapshot.get("label", "AHBPanel"))
     uid_escaped = escape_html(uid)
     app_version_str = escape_html(str(APP_VERSION))
     used_bytes_str = escape_html(fmt_bytes(used))
-    limit_bytes_str = escape_html(fmt_bytes(limit)) if limit > 0 else '∞'
+    limit_bytes_str = escape_html(fmt_bytes(limit)) if limit > 0 else "∞"
     remaining_value_escaped = escape_html(remaining_value)
     expiry_remaining_escaped = escape_html(expiry_remaining)
     expiry_display_escaped = escape_html(expiry_display)
+    ip_limit = "نامحدود" if not snapshot.get("ip_limit", 0) else str(snapshot.get("ip_limit"))
+    connection_limit = "نامحدود" if not snapshot.get("connection_limit", 0) else str(snapshot.get("connection_limit"))
+    speed_limit = "نامحدود" if not snapshot.get("speed_limit_bytes", 0) else fmt_bytes(snapshot.get("speed_limit_bytes", 0)) + "/s"
     ip_limit_escaped = escape_html(ip_limit)
     connection_limit_escaped = escape_html(connection_limit)
     speed_limit_escaped = escape_html(speed_limit)
@@ -3985,510 +3977,273 @@ async def info_page(
     sub_url_escaped = escape_html(sub_url)
     dash_calc_offset = f"{339.29 - (339.29 * min(usage_percent, 100) / 100):.1f}"
 
+    # This page is intentionally kept inside /info/{uid}; /sub/{uid} remains the raw subscription endpoint.
     info_html = f"""<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>{label_escaped} | INFO</title>
+<title>{label_escaped} | AHBPanel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-<script>
-  tailwind.config = {{
-    theme: {{
-      extend: {{
-        fontFamily: {{ vazir: ['Vazirmatn','system-ui','sans-serif'] }}
-      }}
-    }}
-  }}
-</script>
 <style>
-  :root {{
-    --bg-main: #f7f9fd;
-    --bg-card: rgba(255,255,255,.88);
-    --bg-card-hover: rgba(255,255,255,.98);
-    --border-color: rgba(59,130,246,.18);
-    --text-main: #14213d;
-    --text-muted: #71809e;
-    --bg-sub-card: #f1f5fb;
-    --grad-1: rgba(59,130,246,.16);
-    --grad-2: rgba(239,68,68,.13);
-    --grad-3: rgba(239,68,68,.07);
-    --accent-blue: #3b82f6;
-    --accent-red: #ef4444;
-  }}
-
-  body.theme-dark {{
-    --bg-main: #070a12;
-    --bg-card: rgba(20,25,38,.88);
-    --bg-card-hover: rgba(28,34,50,.96);
-    --border-color: rgba(255,255,255,.11);
-    --text-main: #f8fafc;
-    --text-muted: rgba(248,250,252,.55);
-    --bg-sub-card: rgba(0,0,0,.30);
-    --grad-1: rgba(59,130,246,.18);
-    --grad-2: rgba(239,68,68,.15);
-    --grad-3: rgba(239,68,68,.08);
-  }}
-
-  html,body{{background:var(--bg-main); color:var(--text-main); transition:background .3s ease,color .3s ease;}}
-  body{{
-    background:
-      radial-gradient(ellipse 80% 50% at 10% -10%, var(--grad-1), transparent 50%),
-      radial-gradient(ellipse 60% 40% at 95% 15%, var(--grad-2), transparent 45%),
-      radial-gradient(ellipse 55% 35% at 60% 100%, var(--grad-3), transparent 40%),
-      var(--bg-main);
-  }}
-  /* INFO page theme overrides: white by default, dark when toggle is checked */
-  body:not(.theme-dark) .text-white, body:not(.theme-dark) .text-slate-100{{color:var(--text-main)!important}}
-  body:not(.theme-dark) [class*="text-white/"]{{color:var(--text-muted)!important}}
-  body:not(.theme-dark) [class*="border-white"]{{border-color:rgba(59,130,246,.16)!important}}
-  body:not(.theme-dark) [class*="bg-white/"]{{background:rgba(59,130,246,.06)!important}}
-  body:not(.theme-dark) .sub-box{{background:var(--bg-sub-card)!important;border-color:rgba(59,130,246,.14)!important}}
-  body:not(.theme-dark) .dynamic-card{{box-shadow:0 18px 55px rgba(40,64,105,.10)!important}}
-  body:not(.theme-dark) .text-purple-300{{color:#ef4444!important}}
-  body:not(.theme-dark) .bg-purple-400\/10{{background:rgba(239,68,68,.08)!important}}
-  body:not(.theme-dark) .border-purple-400\/30{{border-color:rgba(239,68,68,.24)!important}}
-  body:not(.theme-dark) .text-blue-300{{color:#2563eb!important}}
-  body:not(.theme-dark) .border-blue-400\/25{{border-color:rgba(59,130,246,.24)!important}}
-  body:not(.theme-dark) .bg-blue-400\/20{{background:rgba(59,130,246,.10)!important}}
-  body:not(.theme-dark) .text-emerald-300{{color:#059669!important}}
-  body:not(.theme-dark) .text-amber-300{{color:#b45309!important}}
-  .status-dot{{box-shadow:0 0 10px currentColor}}
-  ::-webkit-scrollbar{{width:8px;height:8px}}
-  ::-webkit-scrollbar-thumb{{background:rgba(255,255,255,.12);border-radius:99px}}
-  * {{ box-shadow: none !important; }}
-  .copy-btn svg{{transition:none}}
-  
-  .dynamic-card {{
-    background-color: var(--bg-card);
-    border-color: var(--border-color);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-  }}
-  .dynamic-card:hover {{
-    background-color: var(--bg-card-hover);
-  }}
-  .sub-box {{
-    background-color: var(--bg-sub-card);
-  }}
+:root{{
+  --bg:#f7f9ff;
+  --card:rgba(255,255,255,.88);
+  --card2:#eef4ff;
+  --text:#101b55;
+  --muted:#50639e;
+  --blue:#2563eb;
+  --blue2:#60a5fa;
+  --red:#ef4444;
+  --green:#10b981;
+  --border:rgba(37,99,235,.20);
+  --shadow:0 16px 45px rgba(40,64,105,.10);
+}}
+*{{box-sizing:border-box}}
+html,body{{margin:0;min-height:100%;font-family:'Vazirmatn',Tahoma,sans-serif;color:var(--text)}}
+body{{
+  min-height:100vh;padding:18px 14px 30px;overflow-x:hidden;
+  background:
+    radial-gradient(ellipse 70% 30% at 0% 5%,rgba(96,165,250,.22),transparent 65%),
+    radial-gradient(ellipse 60% 30% at 100% 5%,rgba(239,68,68,.14),transparent 65%),
+    linear-gradient(180deg,#fbfcff 0%,#f5f8ff 100%);
+  transition:.25s ease;
+}}
+body:before,body:after{{content:"";position:fixed;z-index:-1;width:230px;height:230px;bottom:-90px;border-radius:50%;filter:blur(2px);opacity:.35;pointer-events:none}}
+body:before{{right:-110px;background:radial-gradient(circle,rgba(239,68,68,.42),transparent 67%)}}
+body:after{{left:-110px;background:radial-gradient(circle,rgba(37,99,235,.40),transparent 67%)}}
+body.dark{{
+  --bg:#071021;--card:rgba(10,24,48,.88);--card2:#0e2447;--text:#f5f8ff;--muted:#9db0d8;
+  --border:rgba(96,165,250,.24);--shadow:0 18px 55px rgba(0,0,0,.30);
+  background:radial-gradient(ellipse 70% 30% at 0% 5%,rgba(37,99,235,.22),transparent 65%),radial-gradient(ellipse 60% 30% at 100% 5%,rgba(239,68,68,.14),transparent 65%),#071021;
+}}
+.page{{width:100%;max-width:930px;margin:0 auto}}
+.theme-box,.hero,.traffic,.details{{background:var(--card);border:1.5px solid var(--border);box-shadow:var(--shadow);backdrop-filter:blur(16px)}}
+.theme-box{{min-height:105px;border-radius:30px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;position:relative;overflow:hidden}}
+.theme-box:after,.hero:after{{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(90deg,rgba(37,99,235,.06),transparent 45%,rgba(239,68,68,.05))}}
+.theme-left{{display:flex;align-items:center;gap:18px;position:relative;z-index:1}}
+.theme-icon{{font-size:39px;line-height:1}}
+.theme-title{{font-size:25px;font-weight:900}}
+.theme-desc{{margin-top:6px;color:var(--muted);font-size:14px;line-height:1.9}}
+.switch{{position:relative;width:84px;height:44px;display:inline-block;flex:none;z-index:2}}
+.switch input{{opacity:0;width:0;height:0}}
+.slider{{position:absolute;inset:0;background:#d8dfef;border-radius:999px;cursor:pointer;transition:.2s;border:1px solid rgba(16,27,85,.06)}}
+.slider:before{{content:"✓";position:absolute;width:34px;height:34px;left:4px;top:4px;border-radius:50%;background:#fff;color:#c9d2e5;display:grid;place-items:center;font-weight:900;font-size:17px;transition:.2s;box-shadow:0 3px 8px rgba(20,40,80,.10)}}
+.switch input:checked+.slider{{background:linear-gradient(90deg,var(--blue),var(--red))}}
+.switch input:checked+.slider:before{{transform:translateX(40px);color:var(--green)}}
+.theme-moon{{font-size:29px;opacity:.85}}
+.hero{{margin-top:22px;border-radius:30px;padding:22px;position:relative;overflow:hidden}}
+.hero-top{{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;position:relative;z-index:1}}
+.hero-title{{font-size:31px;font-weight:900;letter-spacing:-.5px}}
+.hero-meta{{margin-top:7px;color:var(--muted);font-size:16px;direction:ltr;text-align:right;line-height:1.8}}
+.shield{{width:58px;height:58px;display:grid;place-items:center;border-radius:18px;border:1px solid rgba(37,99,235,.22);color:var(--blue);background:rgba(37,99,235,.07);font-size:32px}}
+.hero-bottom{{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;position:relative;z-index:1}}
+.pill{{min-height:52px;border-radius:28px;padding:0 25px;display:inline-flex;align-items:center;justify-content:center;gap:9px;font-size:18px;font-weight:900}}
+.share{{color:#fff;text-decoration:none;background:linear-gradient(100deg,#1677ee 0%,#6a5be8 45%,#ff4d55 100%);box-shadow:0 8px 22px rgba(37,99,235,.18)}}
+.status{{background:#11b99b;color:#fff;min-width:155px}}
+.qr{{background:linear-gradient(180deg,#fff1f3,#ffe5e9);border:1px solid rgba(239,68,68,.22);color:#e72f3d;cursor:pointer}}
+.hero-actions{{display:flex;gap:12px;align-items:center;flex-wrap:wrap}}
+.traffic{{margin-top:22px;border-radius:30px;padding:23px;position:relative;overflow:hidden}}
+.section-head{{display:flex;align-items:center;justify-content:flex-start;gap:10px}}
+.section-head h2{{margin:0;font-size:25px;font-weight:900}}
+.section-sub{{font-size:13px;letter-spacing:1.5px;color:var(--muted);font-weight:700;margin-top:2px}}
+.chart-icon{{font-size:31px;color:var(--red)}}
+.usage-main{{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 0 4px}}
+.ring-wrap{{position:relative;width:245px;height:245px}}
+.ring{{width:245px;height:245px;transform:rotate(-90deg)}}
+.ring-track{{stroke:#a9c8ff;opacity:.9}}
+.ring-fill{{stroke:#22c55e;filter:drop-shadow(0 0 5px rgba(34,197,94,.20))}}
+.ring-center{{position:absolute;inset:0;display:grid;place-items:center;text-align:center}}
+.ring-number{{font-size:42px;font-weight:900;line-height:1}}
+.ring-label{{margin-top:8px;font-size:15px;color:var(--muted);font-weight:700}}
+.usage-total{{margin-top:3px;font-size:24px;font-weight:900;direction:ltr;color:var(--muted)}}
+.trend{{margin-top:24px;border-radius:22px;border:1px solid rgba(37,99,235,.18);background:linear-gradient(180deg,rgba(239,244,255,.92),rgba(229,237,255,.76));padding:17px 19px}}
+body.dark .trend{{background:rgba(4,17,38,.58)}}
+.trend-title{{font-size:17px;font-weight:800;text-align:right;color:var(--text)}}
+.progress{{height:22px;border-radius:99px;background:#dce8ff;overflow:hidden;margin-top:25px;box-shadow:inset 0 1px 5px rgba(20,50,100,.10)}}
+.progress-fill{{height:100%;width:{usage_percent}%;min-width:{'0' if usage_percent==0 else '8'}px;border-radius:inherit;background:linear-gradient(90deg,#2196ff,#2458ef)}}
+.bottom-stats{{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:25px;font-size:18px;color:var(--muted);font-weight:700}}
+.bottom-stat b{{color:var(--text);font-size:21px}}
+.details{{margin-top:22px;border-radius:26px;padding:20px}}
+.detail-grid{{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}}
+.detail{{border:1px solid rgba(37,99,235,.12);background:var(--card2);border-radius:17px;padding:14px}}
+.detail-label{{font-size:12px;color:var(--muted)}}
+.detail-value{{margin-top:5px;font-size:14px;font-weight:900;direction:ltr;text-align:right;word-break:break-word}}
+.link-card{{margin-top:22px;border-radius:26px;padding:20px;background:var(--card);border:1.5px solid var(--border);box-shadow:var(--shadow)}}
+.link-head{{display:flex;align-items:center;justify-content:space-between;gap:10px}}
+.link-title{{font-size:20px;font-weight:900}}
+.copy-btn{{border:0;color:#fff;background:linear-gradient(100deg,#176be7,#347ff3);padding:12px 19px;border-radius:13px;font-family:inherit;font-weight:900;cursor:pointer}}
+.url-box{{margin-top:13px;border:1px solid rgba(37,99,235,.16);background:var(--card2);border-radius:16px;padding:15px;color:var(--muted);font-family:ui-monospace,Consolas,monospace;font-size:12px;direction:ltr;text-align:left;word-break:break-all;line-height:1.8}}
+.link-actions{{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}}
+.action-btn{{min-height:55px;border-radius:17px;border:1px solid rgba(37,99,235,.16);background:var(--card2);color:var(--text);font:800 16px 'Vazirmatn';cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:10px}}
+.action-btn.download{{background:linear-gradient(100deg,#1677ee,#367cf0);color:#fff;border-color:transparent}}
+.footer{{text-align:center;color:var(--muted);font-size:12px;padding:22px 0 4px}}
+.modal{{position:fixed;inset:0;z-index:50;background:rgba(5,12,30,.72);display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(8px)}}
+.modal.show{{display:flex}}
+.modal-card{{width:min(420px,100%);background:#fff;border-radius:25px;padding:22px;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,.3)}}
+.modal-title{{font-weight:900;color:#101b55;font-size:18px}}
+.qrbox{{margin:16px auto;background:#fff;padding:12px;border-radius:18px;display:inline-block}}
+.close{{border:0;background:#eef2fa;color:#101b55;border-radius:12px;padding:10px 16px;font-family:inherit;font-weight:800;cursor:pointer}}
+@media(max-width:650px){{
+  body{{padding:12px 9px 24px}}
+  .theme-box{{min-height:94px;border-radius:24px;padding:15px 16px}}
+  .theme-left{{gap:11px}} .theme-icon{{font-size:31px}} .theme-title{{font-size:21px}} .theme-desc{{font-size:11px}}
+  .switch{{width:70px;height:38px}} .slider:before{{width:30px;height:30px;font-size:14px}} .switch input:checked+.slider:before{{transform:translateX(32px)}} .theme-moon{{font-size:22px}}
+  .hero,.traffic,.details,.link-card{{border-radius:24px;padding:17px}}
+  .hero-title{{font-size:26px}} .hero-meta{{font-size:12px}} .shield{{width:48px;height:48px;font-size:26px;border-radius:15px}}
+  .hero-bottom{{flex-direction:column;align-items:stretch}} .hero-actions{{justify-content:space-between}}
+  .pill{{min-height:48px;font-size:15px;padding:0 18px}}
+  .status{{min-width:135px}} .section-head h2{{font-size:22px}}
+  .ring-wrap,.ring{{width:205px;height:205px}} .ring-number{{font-size:35px}}
+  .usage-total{{font-size:19px}} .trend{{padding:14px}} .progress{{height:19px}}
+  .bottom-stats{{font-size:14px}} .bottom-stat b{{font-size:17px}}
+  .detail-grid{{grid-template-columns:1fr}} .link-head{{align-items:flex-start}} .link-title{{font-size:17px}}
+  .link-actions{{grid-template-columns:1fr 1fr}} .action-btn{{font-size:14px}}
+}}
 </style>
 </head>
-<body class="font-vazir text-slate-100 antialiased min-h-screen py-8 px-3 sm:px-4 md:py-14">
+<body>
+<div class="page">
 
-<div class="w-full max-w-4xl mx-auto space-y-5 sm:space-y-6 md:space-y-8">
-
-  <!-- Theme -->
-  <div class="rounded-[22px] border dynamic-card backdrop-blur-2xl px-5 py-4 flex items-center justify-between gap-4">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl grid place-items-center bg-gradient-to-br from-blue-500/15 to-red-500/10 border border-blue-400/20">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9c0-.4 0-.8-.08-1.2A6.5 6.5 0 0 1 12.2 3H12z"/></svg>
-      </div>
+  <div class="theme-box">
+    <div class="theme-left">
+      <div class="theme-icon">🎨</div>
       <div>
-        <p class="text-sm font-black">تم</p>
-        <p class="text-[10px] mt-1 opacity-60">فعال کردن، حالت تیره را روشن می‌کند.</p>
+        <div class="theme-title">تم</div>
+        <div class="theme-desc">با فعال کردن این گزینه، تم برنامه به حالت تیره تغییر می‌کند.</div>
       </div>
     </div>
-    <label class="relative inline-flex items-center cursor-pointer shrink-0">
-      <input id="themeToggle" type="checkbox" class="sr-only peer" onchange="toggleTheme()">
-      <span class="w-14 h-8 rounded-full bg-slate-200 peer-checked:bg-slate-800 border border-slate-300 peer-checked:border-slate-600 transition-colors"></span>
-      <span class="absolute right-1 top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform peer-checked:-translate-x-6 grid place-items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l4 4L19 6"/></svg>
-      </span>
-    </label>
+    <div style="display:flex;align-items:center;gap:10px">
+      <label class="switch" aria-label="تغییر تم"><input id="themeToggle" type="checkbox"><span class="slider"></span></label>
+      <span class="theme-moon">☾</span>
+    </div>
   </div>
 
-  <!-- Hero -->
-  <section class="rounded-[26px] sm:rounded-[28px] border dynamic-card backdrop-blur-2xl p-5 sm:p-6 md:p-8">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-      <div class="flex items-center gap-4">
-        <div class="w-13 h-13 sm:w-14 sm:h-14 shrink-0 rounded-2xl grid place-items-center bg-gradient-to-br from-blue-400/20 to-purple-400/10 border border-blue-400/25 text-blue-300">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5.2-3.4 9-8 10-4.6-1-8-4.8-8-10V6l8-4z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg>
-        </div>
-        <div class="min-w-0">
-          <h1 class="text-lg sm:text-xl md:text-2xl font-black tracking-tight truncate">{label_escaped}</h1>
-          <p class="mt-1.5 text-[10.5px] sm:text-[11px] text-white/40 break-all">UUID: {uid_escaped} &nbsp;·&nbsp; AHBPanel {app_version_str}</p>
-        </div>
+  <section class="hero">
+    <div class="hero-top">
+      <div>
+        <div class="hero-title">لینک پشتی فرض</div>
+        <div class="hero-meta">AHBPanel &nbsp;·&nbsp; {app_version_str}<br>UUID: {uid_escaped}</div>
       </div>
-      <div class="flex items-center gap-2.5 self-start md:self-auto flex-wrap">
-        <button type="button" onclick="openQrModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-extrabold text-purple-300 border border-purple-400/30 bg-purple-400/10 hover:bg-purple-400/20 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          QR Code
-        </button>
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-extrabold {status_badge_html}">
-          <span class="status-dot w-2 h-2 rounded-full bg-current"></span>
-          {status_text}
-        </div>
+      <div class="shield">♢</div>
+    </div>
+    <div class="hero-bottom">
+      <a class="pill share" href="javascript:void(0)" onclick="shareLink()">🔗 لینک اشتراک</a>
+      <div class="hero-actions">
+        <div class="pill status" style="background:{status_color}">✓&nbsp; {status_text}</div>
+        <button class="pill qr" onclick="openQr()">QR Code &nbsp; ▦</button>
       </div>
     </div>
   </section>
 
-  <!-- Usage overview -->
-  <section class="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-5 sm:gap-6">
-
-    <div class="rounded-[22px] border dynamic-card backdrop-blur-2xl p-5 sm:p-6 md:p-7">
-      <div class="flex items-center gap-2.5">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-white/35"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 3 4-7"/></svg>
-        <div>
-          <p class="text-[10px] font-extrabold tracking-widest uppercase text-white/30">Traffic Overview</p>
-          <p class="mt-0.5 text-sm font-black">مصرف سرویس</p>
-        </div>
+  <section class="traffic">
+    <div class="section-head">
+      <div>
+        <h2>مصرف سرویس</h2>
+        <div class="section-sub">TRAFFIC OVERVIEW</div>
       </div>
+      <div class="chart-icon">⌁</div>
+    </div>
 
-      <div class="mt-6 flex flex-col sm:flex-row items-center sm:items-start gap-6">
-        <div class="relative shrink-0 w-[128px] h-[128px]">
-          <svg width="128" height="128" viewBox="0 0 132 132" class="-rotate-90">
-            <circle cx="66" cy="66" r="54" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="10"/>
-            <circle cx="66" cy="66" r="54" fill="none" stroke="url(#usageRingGradient)" stroke-width="10" stroke-linecap="round"
-              stroke-dasharray="339.29" stroke-dashoffset="{dash_calc_offset}"/>
-            <defs>
-              <linearGradient id="usageRingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#34d399"/>
-                <stop offset="100%" stop-color="#f59e0b"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <div class="absolute inset-0 grid place-items-center">
-            <div class="text-center">
-              <p class="text-xl font-black leading-none">{usage_percent}%</p>
-              <p class="mt-1.5 text-[10px] text-white/40">مصرف‌شده</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex-1 w-full min-w-0">
-          <div class="text-xl sm:text-2xl font-black tracking-tight">
-            {used_bytes_str}
-            <span class="text-sm font-semibold text-white/40"> / {limit_bytes_str}</span>
-          </div>
-
-          <div class="mt-4 rounded-xl border border-white/[0.05] sub-box px-3 pt-3 pb-1.5">
-            <p class="flex items-center gap-1.5 text-[10px] text-white/35 mb-1">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>
-              روند مصرف
-            </p>
-            <svg viewBox="0 0 300 64" class="w-full h-14" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.35"/>
-                  <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
-              <path d="M0,64 L{svg_points} L300,64 Z" fill="url(#trendFill)"/>
-              <path d="M{svg_points}" fill="none" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-
-          <div class="mt-4 flex items-center justify-between text-[11px] text-white/40 flex-wrap gap-2">
-            <span class="inline-flex items-center gap-1.5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-              باقی‌مانده: <b class="text-white/70 font-bold">{remaining_value_escaped}</b>
-            </span>
-            <span class="inline-flex items-center gap-1.5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>
-              زمان: <b class="text-white/70 font-bold">{expiry_remaining_escaped}</b>
-            </span>
-
+    <div class="usage-main">
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 132 132" aria-label="درصد مصرف">
+          <circle cx="66" cy="66" r="54" fill="none" class="ring-track" stroke-width="10"/>
+          <circle cx="66" cy="66" r="54" fill="none" class="ring-fill" stroke-width="10" stroke-linecap="round" stroke-dasharray="339.29" stroke-dashoffset="{dash_calc_offset}"/>
+        </svg>
+        <div class="ring-center">
+          <div>
+            <div class="ring-number">{usage_percent}%</div>
+            <div class="ring-label">مصرف شده</div>
           </div>
         </div>
       </div>
+      <div class="usage-total">{used_bytes_str} / {limit_bytes_str}</div>
     </div>
 
-    <div class="rounded-[22px] border dynamic-card backdrop-blur-2xl p-5 sm:p-6 md:p-7">
-      <div class="flex items-center gap-2.5">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-white/35"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
-        <p class="text-[10px] font-extrabold tracking-widest uppercase text-white/30">Service</p>
-      </div>
-      <div class="mt-4 divide-y divide-white/[0.06]">
-        <div class="flex items-center justify-between py-3 first:pt-0">
-          <span class="inline-flex items-center gap-2 text-[11px] text-white/45">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>
-            انقضا
-          </span>
-          <span class="text-xs font-extrabold">{expiry_display_escaped}</span>
-        </div>
-        <div class="flex items-center justify-between py-3">
-          <span class="inline-flex items-center gap-2 text-[11px] text-white/45">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14 0"/><path d="M8.5 16a6 6 0 0 1 7 0"/><path d="M12 20h.01"/></svg>
-            IP Limit
-          </span>
-          <span class="text-xs font-extrabold">{ip_limit_escaped}</span>
-        </div>
-        <div class="flex items-center justify-between py-3">
-          <span class="inline-flex items-center gap-2 text-[11px] text-white/45">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><rect x="2" y="9" width="20" height="8" rx="2"/><path d="M6 17v2M18 17v2"/></svg>
-            Connection
-          </span>
-          <span class="text-xs font-extrabold">{connection_limit_escaped}</span>
-        </div>
-        <div class="flex items-center justify-between py-3 last:pb-0">
-          <span class="inline-flex items-center gap-2 text-[11px] text-white/45">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
-            Speed
-          </span>
-          <span class="text-xs font-extrabold">{speed_limit_escaped}</span>
-        </div>
-      </div>
+    <div class="trend">
+      <div class="trend-title">روند مصرف ↗</div>
+      <div class="progress"><div class="progress-fill"></div></div>
     </div>
 
-  </section>
-
-  <!-- Stats -->
-  <section class="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4 md:gap-5">
-
-    <div class="rounded-2xl border dynamic-card backdrop-blur-xl p-4 sm:p-5 hover:border-emerald-400/20 transition-colors duration-200">
-      <div class="w-9 h-9 rounded-xl grid place-items-center bg-emerald-400/10 border border-emerald-400/20 text-emerald-300">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 9l-5 5-3-3-4 4"/></svg>
-      </div>
-      <p class="mt-4 text-[11px] text-white/45">مصرف فعلی</p>
-      <p class="mt-1 text-[14px] sm:text-[15px] font-black text-emerald-300 break-words">{used_bytes_str}</p>
-    </div>
-
-    <div class="rounded-2xl border dynamic-card backdrop-blur-xl p-4 sm:p-5 hover:border-amber-400/20 transition-colors duration-200">
-      <div class="w-9 h-9 rounded-xl grid place-items-center bg-amber-400/10 border border-amber-400/20 text-amber-300">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-      </div>
-      <p class="mt-4 text-[11px] text-white/45">باقی‌مانده</p>
-      <p class="mt-1 text-[14px] sm:text-[15px] font-black text-amber-300 break-words">{remaining_value_escaped}</p>
-    </div>
-
-    <div class="rounded-2xl border dynamic-card backdrop-blur-xl p-4 sm:p-5 hover:border-blue-400/20 transition-colors duration-200">
-      <div class="w-9 h-9 rounded-xl grid place-items-center bg-blue-400/10 border border-blue-400/20 text-blue-300">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 4v16M4 9h16"/></svg>
-      </div>
-      <p class="mt-4 text-[11px] text-white/45">اتصالات فعال</p>
-      <p class="mt-1 text-[14px] sm:text-[15px] font-black text-blue-300 break-words">{len(unique_ips_for_uuid(uid))}</p>
-    </div>
-
-    <div class="rounded-2xl border dynamic-card backdrop-blur-xl p-4 sm:p-5 hover:border-purple-400/20 transition-colors duration-200">
-      <div class="w-9 h-9 rounded-xl grid place-items-center bg-purple-400/10 border border-purple-400/20 text-purple-300">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 4.5v6c0 5-3.6 8.7-9 9.5-5.4-.8-9-4.5-9-9.5v-6L12 2z"/></svg>
-      </div>
-      <p class="mt-4 text-[11px] text-white/45">زمان باقی‌مانده</p>
-      <p class="mt-1 text-[14px] sm:text-[15px] font-black text-purple-300 break-words">{expiry_remaining_escaped}</p>
-    </div>
-
-  </section>
-
-  <!-- Technical details -->
-  <section class="rounded-[22px] border dynamic-card backdrop-blur-2xl p-5 sm:p-6 md:p-7">
-    <div class="flex items-center justify-between gap-3 mb-5">
-      <p class="flex items-center gap-2 text-sm font-black">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-white/40"><path d="M4 21v-7M4 10V3M12 21v-11M12 6V3M20 21v-5M20 12V3"/><path d="M1 14h6M9 8h6M17 16h6"/></svg>
-        جزئیات فنی
-      </p>
-      <p class="text-[11px] text-white/40">Configuration Details</p>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-      <div class="rounded-2xl border border-white/[0.06] sub-box p-4">
-        <p class="text-[11px] text-white/45">Protocol</p>
-        <p class="mt-2 text-[11px] font-medium text-purple-300 tracking-wide" dir="ltr" style="font-family:ui-monospace,Consolas,monospace">{protocol_escaped}</p>
-      </div>
-      <div class="rounded-2xl border border-white/[0.06] sub-box p-4">
-        <p class="text-[11px] text-white/45">Fingerprint</p>
-        <p class="mt-2 text-[11px] font-medium text-purple-300 tracking-wide" dir="ltr" style="font-family:ui-monospace,Consolas,monospace">{fingerprint_escaped}</p>
-      </div>
-      <div class="rounded-2xl border border-white/[0.06] sub-box p-4">
-        <p class="text-[11px] text-white/45">IP Limit</p>
-        <p class="mt-2 text-xs font-bold text-white/85">{ip_limit_escaped}</p>
-      </div>
-      <div class="rounded-2xl border border-white/[0.06] sub-box p-4">
-        <p class="text-[11px] text-white/45">Connection Limit</p>
-        <p class="mt-2 text-xs font-bold text-white/85">{connection_limit_escaped}</p>
-      </div>
-      <div class="rounded-2xl border border-white/[0.06] sub-box p-4">
-        <p class="text-[11px] text-white/45">Speed Limit</p>
-        <p class="mt-2 text-xs font-bold text-white/85">{speed_limit_escaped}</p>
-      </div>
-      <div class="rounded-2xl border border-white/[0.06] sub-box p-4">
-        <p class="text-[11px] text-white/45">تاریخ انقضا</p>
-        <p class="mt-2 text-xs font-bold text-white/85">{expiry_display_escaped}</p>
-      </div>
+    <div class="bottom-stats">
+      <div class="bottom-stat">◷ &nbsp;باقی‌مانده: <b>{remaining_value_escaped}</b></div>
+      <div class="bottom-stat">▣ &nbsp;زمان: <b>{expiry_remaining_escaped}</b></div>
     </div>
   </section>
 
-  <!-- Links -->
-  <section class="rounded-[22px] border dynamic-card backdrop-blur-2xl p-5 sm:p-6 md:p-7">
-    <div class="flex items-center justify-between gap-3 mb-5">
-      <p class="flex items-center gap-2 text-sm font-black">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-white/40"><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-2.83 2.83a5 5 0 0 0 7.07 7.07l1.41-1.41"/></svg>
-        لینک‌های سرویس
-      </p>
-      <p class="text-[11px] text-white/40">Copy / Import</p>
+  <section class="link-card">
+    <div class="link-head">
+      <div class="link-title">🔗 لینک اشتراک</div>
+      <button class="copy-btn" id="copySub" onclick="copyText('{sub_url_escaped}')">▣ &nbsp; کپی</button>
     </div>
-
-    <div class="space-y-3">
-      <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 rounded-2xl border border-white/[0.06] sub-box p-4 hover:border-purple-400/25 transition-colors duration-200">
-        <div class="min-w-0 flex-1">
-          <p class="text-[11px] font-extrabold text-white/45 tracking-wide">VLESS</p>
-          <p id="vlessLinkText" class="mt-1.5 text-[11px] text-purple-300 break-all leading-6" dir="ltr" style="font-family:ui-monospace,Consolas,monospace">{vless_url_escaped}</p>
-        </div>
-        <button id="vlessCopyBtn" type="button" onclick="pxCopy('vlessLinkText','vlessCopyBtn')"
-          class="copy-btn shrink-0 self-start sm:self-center inline-flex items-center gap-1.5 text-[11px] font-bold text-white/60 px-3.5 py-2 rounded-xl bg-white/[0.05] border border-white/10 hover:bg-white/[0.1] hover:text-white transition-colors duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
-          <span>کپی</span>
-        </button>
-      </div>
-
-      <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 rounded-2xl border border-white/[0.06] sub-box p-4 hover:border-purple-400/25 transition-colors duration-200">
-        <div class="min-w-0 flex-1">
-          <p class="text-[11px] font-extrabold text-white/45 tracking-wide">SUBSCRIPTION</p>
-          <p id="subLinkText" class="mt-1.5 text-[11px] text-purple-300 break-all leading-6" dir="ltr" style="font-family:ui-monospace,Consolas,monospace">{sub_url_escaped}</p>
-        </div>
-        <button id="subCopyBtn" type="button" onclick="pxCopy('subLinkText','subCopyBtn')"
-          class="copy-btn shrink-0 self-start sm:self-center inline-flex items-center gap-1.5 text-[11px] font-bold text-white/60 px-3.5 py-2 rounded-xl bg-white/[0.05] border border-white/10 hover:bg-white/[0.1] hover:text-white transition-colors duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
-          <span>کپی</span>
-        </button>
-      </div>
+    <div class="url-box" id="subUrl">{sub_url_escaped}</div>
+    <div class="link-actions">
+      <button class="action-btn" onclick="openQr()">▦ &nbsp; QR Code</button>
+      <a class="action-btn download" href="{sub_url_escaped}" download>⇩ &nbsp; دانلود لینک</a>
     </div>
   </section>
 
-  <!-- Downloads -->
-  <section class="rounded-[22px] border dynamic-card backdrop-blur-2xl p-5 sm:p-6 md:p-7">
-    <div class="flex items-center justify-between gap-3 mb-5">
-      <p class="flex items-center gap-2 text-sm font-black">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-white/40"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
-        دانلود برنامه‌ها
-      </p>
-      <p class="text-[11px] text-white/40">Official Releases</p>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-      <a href="https://github.com/2dust/v2rayNG/releases/latest" target="_blank" rel="noopener noreferrer"
-         class="flex items-center gap-3 rounded-2xl border border-white/10 sub-box p-4 hover:border-blue-400/25 transition-colors duration-200">
-        <div class="w-10 h-10 shrink-0 rounded-xl grid place-items-center bg-blue-400/10 border border-blue-400/20 text-blue-300 font-black text-[11px]">NG</div>
-        <div class="min-w-0">
-          <p class="text-xs font-extrabold">v2rayNG</p>
-          <p class="mt-0.5 text-[10px] text-white/40">Android</p>
-        </div>
-      </a>
-      <a href="https://github.com/2dust/v2rayN/releases/latest" target="_blank" rel="noopener noreferrer"
-         class="flex items-center gap-3 rounded-2xl border border-white/10 sub-box p-4 hover:border-blue-400/25 transition-colors duration-200">
-        <div class="w-10 h-10 shrink-0 rounded-xl grid place-items-center bg-blue-400/10 border border-blue-400/20 text-blue-300 font-black text-[11px]">N</div>
-        <div class="min-w-0">
-          <p class="text-xs font-extrabold">v2rayN</p>
-          <p class="mt-0.5 text-[10px] text-white/40">Windows / macOS / Linux</p>
-        </div>
-      </a>
-      <a href="https://github.com/hiddify/hiddify-app/releases/latest" target="_blank" rel="noopener noreferrer"
-         class="flex items-center gap-3 rounded-2xl border border-white/10 sub-box p-4 hover:border-blue-400/25 transition-colors duration-200">
-        <div class="w-10 h-10 shrink-0 rounded-xl grid place-items-center bg-blue-400/10 border border-blue-400/20 text-blue-300 font-black text-[11px]">H</div>
-        <div class="min-w-0">
-          <p class="text-xs font-extrabold">Hiddify</p>
-          <p class="mt-0.5 text-[10px] text-white/40">Android / Windows / macOS / Linux</p>
-        </div>
-      </a>
+  <section class="details">
+    <div class="link-title">جزئیات سرویس</div>
+    <div class="detail-grid">
+      <div class="detail"><div class="detail-label">مصرف فعلی</div><div class="detail-value">{used_bytes_str}</div></div>
+      <div class="detail"><div class="detail-label">باقی‌مانده</div><div class="detail-value">{remaining_value_escaped}</div></div>
+      <div class="detail"><div class="detail-label">تاریخ انقضا</div><div class="detail-value">{expiry_display_escaped}</div></div>
+      <div class="detail"><div class="detail-label">IP Limit</div><div class="detail-value">{ip_limit_escaped}</div></div>
+      <div class="detail"><div class="detail-label">Connection Limit</div><div class="detail-value">{connection_limit_escaped}</div></div>
+      <div class="detail"><div class="detail-label">Speed Limit</div><div class="detail-value">{speed_limit_escaped}</div></div>
+      <div class="detail"><div class="detail-label">Protocol</div><div class="detail-value">{protocol_escaped}</div></div>
+      <div class="detail"><div class="detail-label">Fingerprint</div><div class="detail-value">{fingerprint_escaped}</div></div>
     </div>
   </section>
 
-  <!-- Footer -->
-  <div class="rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.05] p-4 text-center text-xs text-white/45">
-    پشتیبانی و اطلاعیه‌ها &nbsp;·&nbsp; <b class="text-emerald-300">کانال تلگرام: ahbpanel</b>
-  </div>
-
+  <div class="footer">AHBPanel {app_version_str} &nbsp;·&nbsp; لینک اطلاعات سرویس</div>
 </div>
 
-<!-- QR Code Modal Popup -->
-<div id="qrModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
-  <div class="w-full max-w-sm rounded-[24px] border border-white/15 bg-[#0b0c14] p-6 text-center shadow-2xl relative">
-    <button type="button" onclick="closeQrModal()" class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white/5 border border-white/10 grid place-items-center text-white/60 hover:text-white">✕</button>
-    <p class="text-sm font-black text-white/90 mb-2">QR Code اسکن کانفیگ</p>
-    <p class="text-[11px] text-white/40 mb-4">برای اتصال سریع با گوشی موبایل</p>
-    <div id="qrcodeContainer" class="bg-white p-4 rounded-2xl inline-block mx-auto mb-4 border border-white/10"></div>
-    <p id="qrModalText" class="text-[10px] text-purple-300 break-all max-h-16 overflow-y-auto px-2" dir="ltr"></p>
+<div class="modal" id="qrModal" onclick="if(event.target===this)closeQr()">
+  <div class="modal-card">
+    <div class="modal-title">QR Code کانفیگ</div>
+    <div class="qrbox" id="qrBox"></div>
+    <div style="font:11px ui-monospace,monospace;color:#50639e;direction:ltr;word-break:break-all;line-height:1.7">{vless_url_escaped}</div>
+    <div style="margin-top:15px"><button class="close" onclick="closeQr()">بستن</button></div>
   </div>
 </div>
 
 <script>
-const vlessUrlData = "{vless_url}";
+const SUB_URL = {sub_url!r};
+const VLESS_URL = {vless_url!r};
+const toggle = document.getElementById('themeToggle');
+if(localStorage.getItem('ahb_info_theme') === 'dark'){{ document.body.classList.add('dark'); toggle.checked=true; }}
+toggle.addEventListener('change',()=>{{ document.body.classList.toggle('dark',toggle.checked); localStorage.setItem('ahb_info_theme',toggle.checked?'dark':'light'); }});
 
-// Theme toggle: white by default, dark when enabled
-function toggleTheme() {{
-  const body = document.body;
-  const toggle = document.getElementById('themeToggle');
-  const enabled = !!(toggle && toggle.checked);
-  body.classList.toggle('theme-dark', enabled);
-  localStorage.setItem('ahb_theme', enabled ? 'dark' : 'light');
-}}
-
-// Initialize saved theme on load
-(function() {{
-  const saved = localStorage.getItem('ahb_theme');
-  const enabled = saved === 'dark';
-  document.body.classList.toggle('theme-dark', enabled);
-  const toggle = document.getElementById('themeToggle');
-  if (toggle) toggle.checked = enabled;
-}})();
-
-function openQrModal() {{
-  var modal = document.getElementById('qrModal');
-  var container = document.getElementById('qrcodeContainer');
-  var txtEl = document.getElementById('qrModalText');
-  container.innerHTML = "";
-  txtEl.textContent = vlessUrlData;
-  modal.classList.remove('hidden');
-  try {{
-    var typeNumber = 0;
-    var errorCorrectionLevel = 'L';
-    var qr = qrcode(typeNumber, errorCorrectionLevel);
-    qr.addData(vlessUrlData);
-    qr.make();
-    container.innerHTML = qr.createImgTag(5, 8);
-  }} catch (e) {{
-    container.innerHTML = "<p class='text-xs text-black'>خطا در تولید QR Code</p>";
+async function copyText(text){{
+  try{{ await navigator.clipboard.writeText(text); showCopied(); }}
+  catch(e){{
+    const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+    try{{document.execCommand('copy')}}catch(_e){{}} ta.remove(); showCopied();
   }}
 }}
-
-function closeQrModal() {{
-  document.getElementById('qrModal').classList.add('hidden');
+function showCopied(){{ const b=document.getElementById('copySub'); const old=b.innerHTML; b.innerHTML='✓ &nbsp; کپی شد'; setTimeout(()=>b.innerHTML=old,1500); }}
+function shareLink(){{
+  if(navigator.share) navigator.share({{title:'لینک اشتراک',text:'لینک اشتراک AHBPanel',url:SUB_URL}}).catch(()=>copyText(SUB_URL));
+  else copyText(SUB_URL);
 }}
-
-document.getElementById('qrModal').addEventListener('click', function(e) {{
-  if (e.target === this) closeQrModal();
-}});
-
-function pxCopy(textId, btnId) {{
-  var el = document.getElementById(textId);
-  var btn = document.getElementById(btnId);
-  if (!el || !btn) return;
-  var text = el.textContent.textContext || el.textContent.trim();
-  var done = function() {{
-    var original = btn.getAttribute('data-original');
-    if (!original) {{
-      original = btn.innerHTML;
-      btn.setAttribute('data-original', original);
-    }}
-    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span>کپی شد</span>';
-    btn.classList.add('text-emerald-300','border-emerald-400/30','bg-emerald-400/10');
-    setTimeout(function() {{
-      btn.innerHTML = original;
-      btn.classList.remove('text-emerald-300','border-emerald-400/30','bg-emerald-400/10');
-    }}, 1700);
-  }};
-  if (navigator.clipboard && navigator.clipboard.writeText) {{
-    navigator.clipboard.writeText(text).then(done).catch(function() {{ fallbackCopy(text, done); }});
-  }} else {{
-    fallbackCopy(text, done);
-  }}
+function openQr(){{
+  const modal=document.getElementById('qrModal'), box=document.getElementById('qrBox'); box.innerHTML='';
+  try{{ const qr=qrcode(0,'L'); qr.addData(VLESS_URL); qr.make(); box.innerHTML=qr.createImgTag(6,8); }}catch(e){{box.innerHTML='<div style="color:#101b55;padding:25px">خطا در ساخت QR</div>';}}
+  modal.classList.add('show');
 }}
-function fallbackCopy(text, cb) {{
-  var ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.opacity = '0';
-  document.body.appendChild(ta);
-  ta.select();
-  try {{ document.execCommand('copy'); }} catch (e) {{}}
-  document.body.removeChild(ta);
-  if (cb) cb();
-}}
+function closeQr(){{document.getElementById('qrModal').classList.remove('show')}}
 </script>
 </body>
 </html>"""
+
     return HTMLResponse(info_html)
+
 # ============================================================
 # SUB GROUP API
 # ============================================================
@@ -4940,128 +4695,157 @@ async def sub_group_subscription(
 PUBLIC_SUB_HTML = r"""
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AHB Panel · Subscription</title>
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1"
+>
+
+<title>
+AHB Panel
+</title>
+
 <style>
-:root{
-  --bg:#f7f9fd;--surface:rgba(255,255,255,.86);--surface2:#f1f5fb;--text:#14213d;
-  --muted:#71809e;--blue:#3b82f6;--blue2:#60a5fa;--red:#ef4444;--red2:#fb7185;
-  --green:#18b889;--border:rgba(59,130,246,.18);--shadow:0 18px 55px rgba(40,64,105,.12);
+
+*{
+    box-sizing:border-box;
 }
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;min-height:100vh;font-family:Tahoma,Arial,sans-serif;color:var(--text);background:
- radial-gradient(circle at 0 0,rgba(59,130,246,.18),transparent 30%),
- radial-gradient(circle at 100% 100%,rgba(239,68,68,.16),transparent 30%),var(--bg);transition:.35s ease}
-body.dark{--bg:#0d1220;--surface:rgba(29,36,53,.88);--surface2:#171d2b;--text:#f5f7fb;--muted:#9ca8bd;--border:rgba(148,163,184,.18);--shadow:0 20px 65px rgba(0,0,0,.32)}
-.page{width:min(100%,720px);margin:auto;padding:18px 16px 42px}
-.theme-box{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;margin-bottom:16px;border:1px solid var(--border);border-radius:24px;background:var(--surface);box-shadow:var(--shadow);backdrop-filter:blur(18px)}
-.theme-title{font-weight:900;font-size:18px}.theme-desc{font-size:12px;color:var(--muted);margin-top:5px}
-.switch{position:relative;width:66px;height:36px;display:block;flex:0 0 auto}.switch input{display:none}.slider{position:absolute;inset:0;border-radius:99px;background:#dbe5f5;cursor:pointer;transition:.25s}.slider:after{content:'☀';position:absolute;width:28px;height:28px;right:4px;top:4px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#334155;box-shadow:0 3px 12px #0002;transition:.25s;font-size:15px}.switch input:checked+.slider{background:linear-gradient(90deg,var(--blue),var(--red))}.switch input:checked+.slider:after{transform:translateX(-30px);content:'☾';color:#172033}
-.card{position:relative;overflow:hidden;border:1px solid var(--border);border-radius:30px;background:var(--surface);box-shadow:var(--shadow);backdrop-filter:blur(22px);padding:24px;margin-bottom:18px}
-.card:before{content:'';position:absolute;width:180px;height:180px;right:-100px;top:-100px;border-radius:50%;background:rgba(59,130,246,.13);filter:blur(4px)}
-.card:after{content:'';position:absolute;width:180px;height:180px;left:-110px;bottom:-110px;border-radius:50%;background:rgba(239,68,68,.10);filter:blur(4px)}
-.head{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.head h1{margin:0;font-size:26px;font-weight:950}.subline{color:var(--muted);font-size:12px;line-height:1.9;margin-top:7px;direction:ltr;text-align:right;word-break:break-all}.shield{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;font-size:25px;color:var(--blue);background:rgba(59,130,246,.09);border:1px solid rgba(59,130,246,.2)}
-.actions{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.btn{border:0;border-radius:999px;padding:12px 18px;font:inherit;font-weight:900;cursor:pointer;color:#fff;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 24px #0001;transition:.2s}.btn:hover{transform:translateY(-1px)}.btn-qr{background:linear-gradient(100deg,var(--blue),var(--red))}.btn-green{background:linear-gradient(100deg,#13a981,#25d49f)}.btn-copy{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
-.section-label{position:relative;z-index:1;color:var(--muted);font-size:12px;font-weight:950;letter-spacing:1.2px}.section-title{position:relative;z-index:1;font-size:23px;font-weight:950;margin:5px 0 20px}.traffic-top{position:relative;z-index:1;display:flex;justify-content:center;padding:4px 0 20px}.ring{width:176px;height:176px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--blue),var(--red),#d9e1ef 0);position:relative}.ring:after{content:'';position:absolute;inset:12px;border-radius:50%;background:var(--surface)}.ring-content{position:relative;z-index:1;text-align:center}.percent{font-size:32px;font-weight:950}.used-label{font-size:12px;color:var(--muted);margin-top:5px}.limit{text-align:left;font-size:25px;font-weight:950;margin:0 0 18px}.chart{position:relative;z-index:1;border-radius:22px;background:var(--surface2);border:1px solid var(--border);padding:18px;height:112px}.chart-title{font-size:12px;color:var(--muted);margin-bottom:20px}.chart-line{height:4px;border-radius:9px;background:linear-gradient(90deg,var(--blue),var(--red));box-shadow:0 0 18px rgba(59,130,246,.35)}.meta{position:relative;z-index:1;display:flex;justify-content:space-between;gap:12px;margin-top:20px;color:var(--muted);font-size:12px}.meta b{color:var(--text);font-size:14px}.service-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.service{padding:15px;border-radius:18px;background:var(--surface2);border:1px solid var(--border)}.service small{color:var(--muted)}.service strong{display:block;margin-top:5px;font-size:16px}.link-list{position:relative;z-index:1;display:grid;gap:10px}.link-item{padding:15px;border-radius:20px;background:var(--surface2);border:1px solid var(--border)}.link-name{font-weight:900}.link-url{direction:ltr;text-align:left;word-break:break-all;color:var(--muted);font-size:11px;margin-top:8px}.empty{text-align:center;color:var(--muted);padding:30px 5px}.footer{text-align:center;color:var(--muted);font-size:11px;padding:4px 0 18px}.support{color:var(--blue);text-decoration:none;font-weight:800}
-.lock{display:grid;gap:12px}.lock input{width:100%;padding:13px 15px;border-radius:16px;border:1px solid var(--border);background:var(--surface2);color:var(--text);outline:none;font:inherit}.error{color:#ef4444;font-size:12px}
-@media(max-width:480px){.page{padding:12px 12px 30px}.card{padding:20px;border-radius:25px}.head h1{font-size:22px}.meta{font-size:11px}.service-grid{grid-template-columns:1fr 1fr}}
+
+body{
+    margin:0;
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:20px;
+
+    font-family:Arial,sans-serif;
+
+    color:#fff;
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(37,99,235,.17),
+            transparent 30%
+        ),
+        #07070a;
+}
+
+.card{
+    width:100%;
+    max-width:560px;
+
+    padding:28px;
+    border-radius:25px;
+
+    background:rgba(255,255,255,.045);
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+
+    backdrop-filter:blur(25px);
+}
+
+h1{
+    margin-top:0;
+}
+
+.text{
+    color:rgba(255,255,255,.55);
+    line-height:2;
+    font-size:13px;
+}
+
+.url{
+    margin-top:20px;
+    padding:14px;
+
+    border-radius:13px;
+
+    background:rgba(0,0,0,.22);
+
+    color:#93c5fd;
+
+    direction:ltr;
+    word-break:break-all;
+
+    font-family:Consolas,monospace;
+}
+
+.support{
+    display:inline-block;
+    margin-top:18px;
+
+    color:#60a5fa;
+    text-decoration:none;
+}
+
+.version{
+    color:#60a5fa;
+    font-size:11px;
+}
+
 </style>
 </head>
+
 <body>
-<div class="page">
-  <div class="theme-box">
-    <div><div class="theme-title">🎨 تم</div><div class="theme-desc">با فعال کردن این گزینه، تم برنامه به حالت تیره تغییر می‌کند.</div></div>
-    <label class="switch" aria-label="تغییر تم"><input id="themeToggle" type="checkbox"><span class="slider"></span></label>
-  </div>
 
-  <section class="card">
-    <div class="head">
-      <div><h1 id="subName">لینک پیش‌فرض</h1><div class="subline" id="subMeta">در حال دریافت اطلاعات...</div></div>
-      <div class="shield">♢</div>
-    </div>
-    <div class="actions">
-      <button class="btn btn-qr" id="qrBtn">▦ QR Code</button>
-      <button class="btn btn-green" id="statusBtn">● فعال</button>
-      <button class="btn btn-copy" id="copyBtn">کپی لینک</button>
-    </div>
-  </section>
+<div class="card">
 
-  <section class="card">
-    <div class="section-label">TRAFFIC OVERVIEW</div>
-    <div class="section-title">مصرف سرویس 📈</div>
-    <div class="traffic-top"><div class="ring" id="ring"><div class="ring-content"><div class="percent" id="percent">0%</div><div class="used-label">مصرف شده</div></div></div></div>
-    <div class="limit" id="limit">∞ / B 0</div>
-    <div class="chart"><div class="chart-title">روند مصرف ↗</div><div class="chart-line"></div></div>
-    <div class="meta"><span>باقی‌مانده: <b id="remaining">نامحدود</b> ◷</span><span>زمان: <b id="expiry">نامحدود</b> ▣</span></div>
-  </section>
+<h1>
+AHB Panel
+</h1>
 
-  <section class="card">
-    <div class="section-label">SERVICE</div>
-    <div class="section-title">اطلاعات سرویس ◷</div>
-    <div class="service-grid">
-      <div class="service"><small>اتصالات فعال</small><strong id="connections">0</strong></div>
-      <div class="service"><small>تعداد کانفیگ</small><strong id="linkCount">0</strong></div>
-      <div class="service"><small>مصرف کل</small><strong id="totalUsed">0 B</strong></div>
-      <div class="service"><small>وضعیت</small><strong id="serviceState">فعال</strong></div>
-    </div>
-  </section>
+<div class="version">
+14.1.0
+</div>
 
-  <section class="card">
-    <div class="section-label">SUBSCRIPTIONS</div>
-    <div class="section-title">کانفیگ‌ها</div>
-    <div id="links" class="link-list"><div class="empty">در حال دریافت کانفیگ‌ها...</div></div>
-  </section>
+<div class="text">
+اشتراک شما آماده است.
+</div>
 
-  <div class="footer">AHB Panel · 14.0.0 · <a class="support" href="https://t.me/ahb_panel" target="_blank" rel="noopener">پشتیبانی @ahb_panel</a></div>
+<div
+class="url"
+id="subUrl"
+></div>
+
+<a
+class="support"
+href="https://t.me/ahb_panel"
+target="_blank"
+rel="noopener"
+>
+پشتیبانی @ahb_panel
+</a>
+
 </div>
 
 <script>
-const key=location.pathname.split('/').filter(Boolean).pop();
-const toggle=document.getElementById('themeToggle');
-const saved=localStorage.getItem('ahb-theme');
-if(saved==='dark'){document.body.classList.add('dark');toggle.checked=true}
-toggle.addEventListener('change',()=>{document.body.classList.toggle('dark',toggle.checked);localStorage.setItem('ahb-theme',toggle.checked?'dark':'light')});
 
-let currentSubUrl='';
-const fmt=(n)=>{n=Number(n||0);if(!n)return '0 B';const u=['B','KB','MB','GB','TB'];let i=0;while(n>=1024&&i<u.length-1){n/=1024;i++}return `${n<10?n.toFixed(1):Math.round(n)} ${u[i]}`};
-const remaining=(limit,used)=>{if(!limit)return 'نامحدود';return fmt(Math.max(0,Number(limit)-Number(used)))};
-const expiry=(v)=>{if(!v)return 'نامحدود';try{return new Date(v).toLocaleDateString('fa-IR')}catch(e){return v}};
-function render(data){
- document.getElementById('subName').textContent=data.name||'لینک پیش‌فرض';
- document.getElementById('subMeta').textContent=`AHBPanel 14.0.0 · ${data.links?.length||0} کانفیگ`;
- currentSubUrl=data.sub_url||location.origin+`/sub-group/${key}`;
- const links=data.links||[]; const used=links.reduce((s,x)=>s+Number(x.used_bytes||0),0); const limit=links.reduce((s,x)=>s+Number(x.limit_bytes||0),0);
- const pct=limit?Math.min(100,Math.round(used/limit*100)):0;
- document.getElementById('percent').textContent=pct+'%';
- document.getElementById('limit').textContent=`${limit?fmt(limit):'∞'} / ${fmt(used)}`;
- document.getElementById('remaining').textContent=remaining(limit,used);
- document.getElementById('expiry').textContent=links.length?expiry(links.map(x=>x.expires_at).filter(Boolean).sort().at(-1)):'نامحدود';
- document.getElementById('connections').textContent=data.active_connections||0;
- document.getElementById('linkCount').textContent=links.length;
- document.getElementById('totalUsed').textContent=fmt(data.total_used_fmt?0:used);
- document.getElementById('serviceState').textContent=links.some(x=>x.active)?'فعال':'غیرفعال';
- document.getElementById('ring').style.background=`conic-gradient(var(--blue),var(--red) ${pct}%,var(--surface2) ${pct}%)`;
- const box=document.getElementById('links');box.innerHTML='';
- if(!links.length){box.innerHTML='<div class="empty">کانفیگی برای نمایش وجود ندارد.</div>';return}
- links.forEach((x,i)=>{const d=document.createElement('div');d.className='link-item';d.innerHTML=`<div class="link-name">${i+1}. ${escapeHtml(x.label||'Config')} · ${x.active?'فعال':'غیرفعال'}</div><div class="link-url">${escapeHtml(x.sub_url||x.vless_link||'')}</div>`;box.appendChild(d)})
-}
-function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
-async function load(pw=''){
- try{const r=await fetch(`/api/public/sub/${encodeURIComponent(key)}${pw?'?pw='+encodeURIComponent(pw):''}`);const d=await r.json();
-  if(d.locked){document.getElementById('links').innerHTML=`<div class="lock"><div>این اشتراک رمز دارد.</div><input id="pw" type="password" placeholder="رمز اشتراک"><button class="btn btn-qr" onclick="load(document.getElementById('pw').value)">ورود</button></div>`;return}
-  render(d);
- }catch(e){document.getElementById('links').innerHTML='<div class="empty error">دریافت اطلاعات اشتراک انجام نشد.</div>'}
-}
-document.getElementById('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(currentSubUrl);document.getElementById('copyBtn').textContent='کپی شد ✓';setTimeout(()=>document.getElementById('copyBtn').textContent='کپی لینک',1500)}catch(e){}};
-document.getElementById('qrBtn').onclick=()=>{if(currentSubUrl)window.open('https://quickchart.io/qr?text='+encodeURIComponent(currentSubUrl)+'&size=500','_blank')};
-load();
+const url =
+    location.origin +
+    location.pathname.replace(
+        "/p/",
+        "/sub-group/"
+    );
+
+document.getElementById(
+    "subUrl"
+).textContent = url;
+
 </script>
+
 </body>
 </html>
 """
+
 
 @app.get(
     "/p/{uuid_key}",
@@ -6424,21 +6208,21 @@ DASHBOARD_HTML = r"""
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>AHBPanel 14.0.0</title>
+<title>AHBPanel 14.1.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#06060b;--bg2:#0b0b12;--bg3:#12121c;--card:rgba(18,18,28,.92);--card-b:rgba(255,255,255,.08);
-  --accent:#3b82f6;--accent2:#60a5fa;--purple:#ef4444;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;
+  --accent:#3b82f6;--accent2:#60a5fa;--purple:#8b5cf6;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;
   --t1:#f8fafc;--t2:rgba(248,250,252,.72);--t3:rgba(248,250,252,.42);
   --sb:252px;--sb-c:74px;--radius:18px;--shadow:0 12px 40px rgba(0,0,0,.45);
   --input-bg:rgba(0,0,0,.4);--hover:rgba(59,130,246,.12);
-  --glow:0 0 40px rgba(59,130,246,.12),0 0 70px rgba(239,68,68,.08);--glass:blur(16px);
+  --glow:0 0 40px rgba(59,130,246,.12);--glass:blur(16px);
 }
 html.light{
   --bg:#eef1f8;--bg2:#ffffff;--bg3:#f1f4fa;--card:#ffffff;--card-b:rgba(15,23,42,.09);
-  --accent:#3b82f6;--accent2:#3b82f6;--purple:#dc2626;--green:#16a34a;--red:#dc2626;--amber:#d97706;
+  --accent:#2563eb;--accent2:#3b82f6;--purple:#7c3aed;--green:#16a34a;--red:#dc2626;--amber:#d97706;
   --t1:#0f172a;--t2:#475569;--t3:#94a3b8;
   --shadow:0 10px 32px rgba(15,23,42,.08);
   --input-bg:#f8fafc;--hover:rgba(37,99,235,.08);
@@ -6450,7 +6234,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--t1);dis
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
     radial-gradient(ellipse 80% 50% at 100% 0%, rgba(59,130,246,.14), transparent 50%),
-    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(239,68,68,.10), transparent 45%);
+    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(139,92,246,.10), transparent 45%);
 }
 html.light body::before{
   background:
@@ -6470,7 +6254,7 @@ body.en{font-family:'Inter',system-ui,sans-serif}
 .sb-toggle svg{width:14px;height:14px;transition:transform .28s}
 .sidebar.collapsed .sb-toggle svg{transform:rotate(180deg)}
 .sb-logo{display:flex;align-items:center;gap:12px;padding:20px 16px;border-bottom:1px solid var(--card-b)}
-.sb-logo-icon{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#ef4444);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0;box-shadow:0 4px 14px rgba(59,130,246,.35)}
+.sb-logo-icon{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0;box-shadow:0 4px 14px rgba(59,130,246,.35)}
 .sb-logo-text{overflow:hidden;white-space:nowrap}
 .sb-logo-name{font-size:15px;font-weight:800;letter-spacing:-.02em}
 .sb-logo-ver{font-size:10px;color:var(--t3);margin-top:2px}
@@ -6517,7 +6301,7 @@ body.en{font-family:'Inter',system-ui,sans-serif}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 .action-card{cursor:pointer;transition:.2s;border:1px solid var(--card-b)}
 .action-card:hover{border-color:rgba(59,130,246,.4);transform:translateY(-2px);box-shadow:0 12px 28px rgba(59,130,246,.12)}
-.action-card.purple:hover{border-color:rgba(239,68,68,.45)}
+.action-card.purple:hover{border-color:rgba(139,92,246,.45)}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 16px;border-radius:11px;border:1px solid var(--card-b);background:var(--bg3);color:var(--t2);cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;transition:.15s}
 .btn:hover{color:var(--t1);border-color:var(--accent)}
@@ -6617,7 +6401,7 @@ tr:hover td{background:var(--hover)}
     <div class="sb-logo-icon">AHB</div>
     <div class="sb-logo-text">
       <div class="sb-logo-name">AHBPanel</div>
-      <div class="sb-logo-ver">v14.0.0</div>
+      <div class="sb-logo-ver">v13.9.4</div>
     </div>
   </div>
   <nav class="nav">
@@ -6787,12 +6571,12 @@ tr:hover td{background:var(--hover)}
         <span data-i18n="btn_create">ساخت</span>
       </button>
     </div>
-    <div class="card" style="border-color:rgba(239,68,68,.35)">
+    <div class="card" style="border-color:rgba(139,92,246,.35)">
       <div class="card-title" data-i18n="auto_create">ساخت خودکـار (پیشنهــادی)</div>
       <p style="color:var(--t2);font-size:13px;line-height:1.75;margin-bottom:14px" data-i18n="auto_desc">با یک کلیک کانفیگ بهینه ساخته می‌شود. بعد از ساخت لینک VLESS و ساب در اختیار شماست.</p>
       <div class="field"><label data-i18n="label_proto">پروتکـل</label><select id="aProto"></select></div>
       <div class="field"><label data-i18n="label_count">تعداد کانفیگ در سـاب (1-40)</label><input id="aCount" type="number" value="1" min="1" max="40"></div>
-      <button class="btn btn-p" style="width:100%;background:linear-gradient(135deg,#ef4444,#6366f1)" onclick="doAutoCreate()">
+      <button class="btn btn-p" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#6366f1)" onclick="doAutoCreate()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2"/></svg>
         <span data-i18n="btn_auto">ساخـت خودکــار</span>
       </button>
@@ -6886,7 +6670,7 @@ tr:hover td{background:var(--hover)}
     <p style="font-size:12px;color:var(--t3);line-height:1.8;margin-bottom:14px">در صورت خرابی پنل، بک‌آپ را دانلود کنید و در پنل جدید وارد کنید.</p>
     <div class="g2" style="margin-bottom:12px">
       <button class="btn btn-p" style="width:100%" onclick="downloadBackup('users')">دانلود بک‌آپ کاربران</button>
-      <button class="btn btn-p" style="width:100%;background:linear-gradient(135deg,#ef4444,#6366f1)" onclick="downloadBackup('bot')">دانلود بک‌آپ ربات</button>
+      <button class="btn btn-p" style="width:100%;background:linear-gradient(135deg,#8b5cf6,#6366f1)" onclick="downloadBackup('bot')">دانلود بک‌آپ ربات</button>
     </div>
     <div class="field">
       <label>وارد کردن بـک‌آپ کاربران</label>
@@ -7799,7 +7583,7 @@ async def global_exception_handler(
         """
         <html lang="fa" dir="rtl">
         <body style="
-            background:#05070d;
+            background:#07070a;
             color:#fff;
             font-family:sans-serif;
             padding:40px;
